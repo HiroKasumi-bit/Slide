@@ -38,7 +38,8 @@ Ghi chú:
 - Lồng tiếng (TTS) và nhạc nền cục bộ chưa cài; hỏi người dùng trước khi cài thêm.
 - Video dự án đặt ở `videos/<tên>/`. Muốn đưa video vào deck thì xuất MP4 rồi nhúng `<video>` vào slide; trong PDF chỉ còn khung hình tĩnh, nên chèn ảnh các cảnh ngay sau slide video: `ffmpeg -ss <giây> -i video.mp4 -frames:v 1 canh.jpg` rồi `node tools/insert-images.mjs deck.pdf <số trang slide video> out.pdf canh*.jpg`.
 - HyperFrames ở cloud: CDN jsdelivr bị chặn → chép `gsap.min.js` từ npm (`npm pack gsap`) vào `assets/vendor/`; font phải có `@font-face` trỏ file cục bộ ngay trong `index.html`; di chuyển phần tử bằng `x`/`y` (transform), không dùng `left`/`top` (lint báo lỗi vì giật hình). Chạy `npx hyperframes check` đến khi đạt, xem `snapshot --at` trước khi `render` (~10 khung/giây ở cloud).
-- Ví dụ hoàn chỉnh: `decks/bai-8-he-tieu-hoa/` (deck) và `videos/bai-8-ung-dung/` (video nhúng trong deck).
+- Ví dụ hoàn chỉnh: `decks/bai-8-he-tieu-hoa/` (deck) và `videos/tieu-hoa-3d/` (video 3D nhúng ở slide 12 của deck).
+- **Video 3D**: dùng Three.js qua adapter `three` của HyperFrames (xem `hyperframes-animation/adapters/three.md`). Chép `three.module.js` + `three.core.js` và các addon cần (postprocessing bloom, RoomEnvironment) từ `npm pack three` vào `assets/vendor/three/`, khai báo importmap trỏ file cục bộ. Cảnh phải là hàm thuần của thời gian `renderAt(t)` gọi từ sự kiện `hf-seek`; hình dạng cơ quan dựng thủ tục (tube quét theo đường cong, bán kính thay đổi theo thời gian để tạo nhu động). Ở cloud render bằng SwiftShader ~2 khung/giây với `-w 3`; xem `snapshot --at` trước để chỉnh ánh sáng (bloom + env map dễ làm màu bạc trắng).
 
 ## Quy tắc khi làm slide
 

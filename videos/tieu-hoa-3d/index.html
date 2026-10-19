@@ -1,0 +1,326 @@
+<!doctype html>
+<html lang="vi" data-resolution="landscape">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=1920, height=1080" />
+    <title>Quá trình tiêu hoá ở người · 3D</title>
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "./assets/vendor/three/three.module.js",
+          "three/addons/": "./assets/vendor/three/addons/"
+        }
+      }
+    </script>
+    <script src="assets/vendor/gsap.min.js"></script>
+    <style>
+/* vietnamese */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-400i-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-400i-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-400i-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-400-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-400-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-400-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-500-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-500-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-500-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-600-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-600-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-600-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-700-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-700-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Be Vietnam Pro';
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url(assets/fonts/BeVietnamPro-700-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+/* vietnamese */
+@font-face {
+  font-family: 'Lexend';
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url(assets/fonts/Lexend-var-vietnamese.woff2) format('woff2');
+  unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1, U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329, U+1EA0-1EF9, U+20AB;
+}
+/* latin-ext */
+@font-face {
+  font-family: 'Lexend';
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url(assets/fonts/Lexend-var-latin-ext.woff2) format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C4, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+/* latin */
+@font-face {
+  font-family: 'Lexend';
+  font-style: normal;
+  font-weight: 500 800;
+  font-display: swap;
+  src: url(assets/fonts/Lexend-var-latin.woff2) format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+      * { margin: 0; padding: 0; box-sizing: border-box; }
+      html, body { width: 1920px; height: 1080px; overflow: hidden; background: #04131a; }
+      #root { position: relative; width: 100%; height: 100%; overflow: hidden; background: #04131a; font-family: 'Be Vietnam Pro', sans-serif; color: #fff; }
+      #gl { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+      /* 3D-anchored organ labels: JS writes the anchor's screen position each frame */
+      #labels { position: absolute; inset: 0; pointer-events: none; }
+      .lbl { position: absolute; left: 0; top: 0; opacity: 0; }
+      .lbl i { position: absolute; left: -9px; top: -9px; width: 18px; height: 18px; border-radius: 50%; background: #fff; box-shadow: 0 0 0 6px rgba(255,255,255,0.25), 0 0 22px rgba(120,255,240,0.9); }
+      .lbl span {
+        position: absolute; left: 34px; top: -26px; white-space: nowrap;
+        padding: 10px 20px; border-radius: 999px;
+        background: rgba(255,255,255,0.94); color: #10231c;
+        font: 700 30px/1 'Lexend', sans-serif;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.35);
+      }
+      .lbl span::before { content: ''; position: absolute; left: -22px; top: 50%; width: 22px; height: 3px; background: rgba(255,255,255,0.9); }
+
+      .brand { position: absolute; left: 70px; top: 50px; padding: 12px 20px; border-radius: 999px; background: rgba(4,19,26,0.72); font: 600 24px/1 'Lexend', sans-serif; letter-spacing: 0.06em; color: rgba(255,255,255,0.85); }
+      .brand b { color: #5fe8d8; }
+
+      /* caption cards */
+      .clip { position: absolute; inset: 0; pointer-events: none; }
+      .cap .card {
+        position: absolute; left: 70px; bottom: 70px; max-width: 1040px;
+        padding: 30px 38px 34px; border-radius: 28px;
+        background: rgba(4, 19, 26, 0.72); border: 1.5px solid rgba(255,255,255,0.14);
+        box-shadow: 0 30px 80px rgba(0,0,0,0.45);
+      }
+      .pill { display: inline-block; padding: 10px 20px; border-radius: 999px; background: var(--c); color: #fff; font: 700 28px/1 'Lexend', sans-serif; }
+      .txt { margin-top: 18px; font-size: 40px; line-height: 1.42; font-weight: 600; }
+      .w { display: inline-block; }
+
+      .title .wrap { position: absolute; left: 110px; top: 0; bottom: 0; max-width: 980px; display: flex; flex-direction: column; justify-content: center; }
+      .title .kick { font: 700 30px/1 'Lexend', sans-serif; letter-spacing: 0.14em; color: #5fe8d8; }
+      .title h1 { margin-top: 22px; font: 800 92px/1.08 'Lexend', sans-serif; letter-spacing: -0.03em; }
+      .title h1 .w { padding-bottom: 0.1em; }
+
+      .legend { position: absolute; right: 70px; top: 60px; display: flex; gap: 14px; }
+      .legend span { display: inline-flex; align-items: center; gap: 12px; padding: 12px 22px; border-radius: 999px; background: rgba(4,19,26,0.72); border: 1.5px solid rgba(255,255,255,0.14); font: 700 26px/1 'Lexend', sans-serif; }
+      .legend i { width: 20px; height: 20px; border-radius: 50%; box-shadow: 0 0 14px currentColor; }
+
+      .recap .wrap { position: absolute; right: 90px; top: 50%; margin-top: -260px; width: 640px; padding: 38px 40px; border-radius: 30px; background: rgba(4,19,26,0.78); border: 1.5px solid rgba(255,255,255,0.14); display: flex; flex-direction: column; gap: 24px; }
+      .recap h2 { font: 700 36px/1.25 'Lexend', sans-serif; color: #fff; }
+      .stages { display: flex; flex-direction: column; gap: 16px; }
+      .stage { display: flex; align-items: center; gap: 16px; padding: 18px 26px; border-radius: 22px; background: rgba(255,255,255,0.94); color: #10231c; font: 700 30px/1 'Lexend', sans-serif; }
+      .stage b { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; background: #178a79; color: #fff; font-size: 24px; }
+    </style>
+  </head>
+  <body>
+    <div id="root" data-composition-id="main" data-start="0" data-duration="72" data-width="1920" data-height="1080" data-fps="30">
+      <canvas id="gl" width="1920" height="1080"></canvas>
+      <div id="labels">
+        <div class="lbl" id="l-mieng"><i></i><span>Miệng</span></div>
+        <div class="lbl" id="l-nuocbot"><i></i><span>Tuyến nước bọt</span></div>
+        <div class="lbl" id="l-thucquan"><i></i><span>Thực quản</span></div>
+        <div class="lbl" id="l-daday"><i></i><span>Dạ dày</span></div>
+        <div class="lbl" id="l-gan"><i></i><span>Gan</span></div>
+        <div class="lbl" id="l-tuimat"><i></i><span>Túi mật</span></div>
+        <div class="lbl" id="l-tuy"><i></i><span>Tuỵ</span></div>
+        <div class="lbl" id="l-ruotnon"><i></i><span>Ruột non</span></div>
+        <div class="lbl" id="l-ruotgia"><i></i><span>Ruột già</span></div>
+        <div class="lbl" id="l-tructrang"><i></i><span>Trực tràng</span></div>
+        <div class="lbl" id="l-haumon"><i></i><span>Hậu môn</span></div>
+      </div>
+      <div class="brand"><b>BÀI 8</b> · Hệ tiêu hóa ở động vật</div>
+
+      <section id="title" class="clip title" data-start="0" data-duration="6" data-track-index="2">
+        <div class="wrap"><div class="kick">4.</div><h1><span class=w>Tiêu</span> <span class=w>hoá</span> <span class=w>thức</span> <span class=w>ăn</span> <span class=w>trong</span> <span class=w>ống</span> <span class=w>tiêu</span> <span class=w>hoá</span> <span class=w>ở</span> <span class=w>người</span></h1></div>
+      </section>
+      <section id="cap-b1" class="clip cap" data-start="6.6" data-duration="3.0" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">a. Tiêu hoá ở khoang miệng</b><p class="txt"><span class=w>Răng</span> <span class=w>cắt,</span> <span class=w>nghiền</span> <span class=w>nhỏ</span> <span class=w>thức</span> <span class=w>ăn.</span></p></div></section>
+      <section id="cap-b2" class="clip cap" data-start="9.6" data-duration="3.4" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">a. Tiêu hoá ở khoang miệng</b><p class="txt"><span class=w>Enzyme</span> <span class=w>amylase</span> <span class=w>trong</span> <span class=w>nước</span> <span class=w>bọt</span> <span class=w>thuỷ</span> <span class=w>phân</span> <span class=w>tinh</span> <span class=w>bột</span> <span class=w>thành</span> <span class=w>maltose.</span></p></div></section>
+      <section id="cap-c" class="clip cap" data-start="13.4" data-duration="6.6" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">Vận chuyển</b><p class="txt"><span class=w>Thực</span> <span class=w>quản</span> <span class=w>co</span> <span class=w>bóp</span> <span class=w>theo</span> <span class=w>kiểu</span> <span class=w>nhu</span> <span class=w>động,</span> <span class=w>đẩy</span> <span class=w>thức</span> <span class=w>ăn</span> <span class=w>xuống</span> <span class=w>dạ</span> <span class=w>dày.</span></p></div></section>
+      <section id="cap-d1" class="clip cap" data-start="20.4" data-duration="3.8" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">b. Tiêu hoá ở dạ dày</b><p class="txt"><span class=w>Dạ</span> <span class=w>dày</span> <span class=w>co</span> <span class=w>bóp,</span> <span class=w>làm</span> <span class=w>nhỏ</span> <span class=w>và</span> <span class=w>trộn</span> <span class=w>thức</span> <span class=w>ăn</span> <span class=w>với</span> <span class=w>dịch</span> <span class=w>vị.</span></p></div></section>
+      <section id="cap-d2" class="clip cap" data-start="24.2" data-duration="3.2" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">b. Tiêu hoá ở dạ dày</b><p class="txt"><span class=w>Pepsin</span> <span class=w>phân</span> <span class=w>giải</span> <span class=w>protein</span> <span class=w>thành</span> <span class=w>các</span> <span class=w>peptide.</span></p></div></section>
+      <section id="cap-d3" class="clip cap" data-start="27.4" data-duration="3.6" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">b. Tiêu hoá ở dạ dày</b><p class="txt"><span class=w>HCl</span> <span class=w>tạo</span> <span class=w>môi</span> <span class=w>trường</span> <span class=w>acid,</span> <span class=w>hỗ</span> <span class=w>trợ</span> <span class=w>hoạt</span> <span class=w>động</span> <span class=w>của</span> <span class=w>pepsin</span> <span class=w>và</span> <span class=w>giúp</span> <span class=w>hạn</span> <span class=w>chế</span> <span class=w>nhiều</span> <span class=w>vi</span> <span class=w>sinh</span> <span class=w>vật</span> <span class=w>có</span> <span class=w>hại.</span></p></div></section>
+      <section id="cap-e1" class="clip cap" data-start="31.4" data-duration="3.8" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">c. Tiêu hoá ở ruột non</b><p class="txt"><span class=w>Dịch</span> <span class=w>tụy</span> <span class=w>và</span> <span class=w>dịch</span> <span class=w>ruột</span> <span class=w>chứa</span> <span class=w>enzyme</span> <span class=w>phân</span> <span class=w>giải</span> <span class=w>các</span> <span class=w>chất</span> <span class=w>dinh</span> <span class=w>dưỡng.</span></p></div></section>
+      <section id="cap-e2" class="clip cap" data-start="35.2" data-duration="4.2" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">c. Tiêu hoá ở ruột non</b><p class="txt"><span class=w>Dịch</span> <span class=w>mật</span> <span class=w>do</span> <span class=w>gan</span> <span class=w>sản</span> <span class=w>xuất</span> <span class=w>giúp</span> <span class=w>chia</span> <span class=w>giọt</span> <span class=w>mỡ</span> <span class=w>lớn</span> <span class=w>thành</span> <span class=w>các</span> <span class=w>giọt</span> <span class=w>mỡ</span> <span class=w>nhỏ,</span> <span class=w>làm</span> <span class=w>tăng</span> <span class=w>diện</span> <span class=w>tích</span> <span class=w>tiếp</span> <span class=w>xúc</span> <span class=w>của</span> <span class=w>lipid</span> <span class=w>với</span> <span class=w>enzyme</span> <span class=w>lipase.</span></p></div></section>
+      <section id="cap-e3" class="clip cap" data-start="39.4" data-duration="3.6" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">c. Tiêu hoá ở ruột non</b><p class="txt"><span class=w>Nhu</span> <span class=w>động</span> <span class=w>đẩy</span> <span class=w>thức</span> <span class=w>ăn</span> <span class=w>dọc</span> <span class=w>theo</span> <span class=w>ruột</span> <span class=w>non</span> <span class=w>về</span> <span class=w>phía</span> <span class=w>ruột</span> <span class=w>già.</span></p></div></section>
+      <section id="cap-f1" class="clip cap" data-start="43.4" data-duration="5.0" data-track-index="2"><div class="card" style="--c:#d63f4d"><b class="pill">5. Hấp thụ chất dinh dưỡng</b><p class="txt"><span class=w>Hấp</span> <span class=w>thụ</span> <span class=w>chất</span> <span class=w>dinh</span> <span class=w>dưỡng</span> <span class=w>chủ</span> <span class=w>yếu</span> <span class=w>diễn</span> <span class=w>ra</span> <span class=w>ở</span> <span class=w>ruột</span> <span class=w>non.</span></p></div></section>
+      <section id="cap-f2" class="clip cap" data-start="48.4" data-duration="5.6" data-track-index="2"><div class="card" style="--c:#d63f4d"><b class="pill">5. Hấp thụ chất dinh dưỡng</b><p class="txt"><span class=w>Thành</span> <span class=w>ruột</span> <span class=w>non</span> <span class=w>có</span> <span class=w>nhiều</span> <span class=w>nếp</span> <span class=w>gấp,</span> <span class=w>lông</span> <span class=w>ruột</span> <span class=w>và</span> <span class=w>vi</span> <span class=w>nhung</span> <span class=w>mao,</span> <span class=w>làm</span> <span class=w>tăng</span> <span class=w>diện</span> <span class=w>tích</span> <span class=w>hấp</span> <span class=w>thụ.</span></p></div></section>
+      <section id="cap-g1" class="clip cap" data-start="54.4" data-duration="4.2" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">d. Tiêu hoá ở ruột già</b><p class="txt"><span class=w>Nhu</span> <span class=w>động</span> <span class=w>ruột</span> <span class=w>già</span> <span class=w>đẩy</span> <span class=w>phân</span> <span class=w>về</span> <span class=w>phía</span> <span class=w>trực</span> <span class=w>tràng.</span></p></div></section>
+      <section id="cap-g2" class="clip cap" data-start="58.6" data-duration="5.4" data-track-index="2"><div class="card" style="--c:#d8652a"><b class="pill">d. Tiêu hoá ở ruột già</b><p class="txt"><span class=w>Phân</span> <span class=w>được</span> <span class=w>thải</span> <span class=w>ra</span> <span class=w>ngoài</span> <span class=w>qua</span> <span class=w>hậu</span> <span class=w>môn.</span></p></div></section>
+      <section id="legend" class="clip" data-start="44" data-duration="10" data-track-index="3">
+        <div class="legend"><span><i style="background:#7dffb0;color:#7dffb0"></i>Amino acid</span><span><i style="background:#ffe066;color:#ffe066"></i>Đường đơn</span><span><i style="background:#ffa04a;color:#ffa04a"></i>Acid béo</span></div>
+      </section>
+      <section id="recap" class="clip recap" data-start="64.6" data-duration="7.4" data-track-index="2">
+        <div class="wrap"><h2>Quá trình dinh dưỡng gồm 4 giai đoạn:</h2><div class="stages"><span class="stage"><b>1</b>Lấy thức ăn.</span><span class="stage"><b>2</b>Tiêu hoá thức ăn.</span><span class="stage"><b>3</b>Hấp thụ chất dinh dưỡng.</span><span class="stage"><b>4</b>Đồng hoá các chất.</span></div></div>
+      </section>
+    </div>
+
+    <script type="module">
+      import * as THREE from 'three';
+      import { renderAt } from './scene.js';
+      // Three adapter: render exactly the requested time on every seek
+      window.addEventListener('hf-seek', (event) => renderAt(event.detail.time));
+      renderAt(window.__hfThreeTime || 0);
+      void THREE.REVISION;
+    </script>
+    <script>
+      // Overlay text: one paused GSAP timeline, registered after fonts load
+      document.fonts.ready.then(() => {
+        const tl = gsap.timeline({ paused: true });
+        const capIn = (sel, t) => {
+          tl.fromTo(sel + ' .card', { opacity: 0, y: 40 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out' }, t);
+          tl.fromTo(sel + ' .w', { opacity: 0, y: 18 }, { opacity: 1, y: 0, duration: 0.5, ease: 'expo.out', stagger: 0.035 }, t + 0.15);
+        };
+        const capOut = (sel, t) => tl.to(sel + ' .card', { opacity: 0, y: -16, duration: 0.3, ease: 'power2.in' }, t);
+        tl.fromTo('#title .kick', { opacity: 0, x: -40 }, { opacity: 1, x: 0, duration: 0.8, ease: 'expo.out' }, 0.4);
+        tl.fromTo('#title .w', { opacity: 0, yPercent: 60 }, { opacity: 1, yPercent: 0, duration: 0.9, ease: 'back.out(1.6)', stagger: 0.07 }, 0.6);
+        tl.to('#title .wrap', { opacity: 0, x: -60, duration: 0.5, ease: 'power2.in' }, 5.3);
+        capIn('#cap-b1', 6.6);
+        capOut('#cap-b1', 9.25);
+        capIn('#cap-b2', 9.6);
+        capOut('#cap-b2', 12.65);
+        capIn('#cap-c', 13.4);
+        capOut('#cap-c', 19.65);
+        capIn('#cap-d1', 20.4);
+        capOut('#cap-d1', 23.85);
+        capIn('#cap-d2', 24.2);
+        capOut('#cap-d2', 27.05);
+        capIn('#cap-d3', 27.4);
+        capOut('#cap-d3', 30.65);
+        capIn('#cap-e1', 31.4);
+        capOut('#cap-e1', 34.85);
+        capIn('#cap-e2', 35.2);
+        capOut('#cap-e2', 39.05);
+        capIn('#cap-e3', 39.4);
+        capOut('#cap-e3', 42.65);
+        capIn('#cap-f1', 43.4);
+        capOut('#cap-f1', 48.05);
+        capIn('#cap-f2', 48.4);
+        capOut('#cap-f2', 53.65);
+        capIn('#cap-g1', 54.4);
+        capOut('#cap-g1', 58.25);
+        capIn('#cap-g2', 58.6);
+        capOut('#cap-g2', 63.65);
+        tl.fromTo('#legend span', { opacity: 0, y: -20 }, { opacity: 1, y: 0, duration: 0.6, ease: 'expo.out', stagger: 0.15 }, 44.6);
+        tl.to('#legend .legend', { opacity: 0, duration: 0.3 }, 53.6);
+        tl.fromTo('#recap h2', { opacity: 0, y: 20 }, { opacity: 1, y: 0, duration: 0.7, ease: 'expo.out' }, 64.8);
+        tl.fromTo('#recap .stage', { opacity: 0, y: 40, scale: 0.8 }, { opacity: 1, y: 0, scale: 1, duration: 0.7, ease: 'back.out(1.8)', stagger: 0.55 }, 65.4);
+        window.__timelines['main'] = tl;
+        if (window.__hfForceTimelineRebind) window.__hfForceTimelineRebind();
+      });
+    </script>
+  </body>
+</html>

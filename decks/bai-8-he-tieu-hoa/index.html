@@ -1123,6 +1123,86 @@ tr.rv > td {
 /* Tabs lift on hover */
 .tab:hover { filter: brightness(1.08); }
 
+/* ===========================================
+   SLIDE: 3D VIDEO
+   =========================================== */
+.vwrap.v3d { width: 1240px; align-self: center; }
+
+/* ===========================================
+   SLIDES: II. ỨNG DỤNG
+   =========================================== */
+.frame.long .hd h2 { font-size: 54px; }
+
+.app-fig { grid-template-columns: 1fr 500px; gap: 44px; }
+.app-fig .col { gap: 26px; }
+.fig.portrait { width: 500px; }
+.fig.portrait img { max-height: 640px; object-fit: contain; }
+
+/* Highlighter sweep over key phrases */
+.mk {
+    background: linear-gradient(transparent 45%, rgba(255, 210, 80, 0.6) 45% 98%, transparent 98%) no-repeat;
+    background-size: 0% 100%;
+    -webkit-box-decoration-break: clone;
+    box-decoration-break: clone;
+    transition: background-size 1.1s var(--ease);
+    transition-delay: calc(var(--td, 0s) + 1.1s);
+}
+.visible .mk { background-size: 100% 100%; }
+
+.kcal { display: flex; gap: 24px; }
+.kcal .stat { display: flex; flex-direction: column; gap: 6px; justify-self: auto; padding: 22px 32px; border-radius: 26px; }
+.kcal .stat b { font-size: 56px; }
+.kcal .stat span { font-size: 23px; opacity: 0.9; }
+
+.nutris { list-style: none; display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 14px 18px; }
+.nutri {
+    display: inline-flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 26px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 12px 30px rgba(29, 42, 36, 0.1);
+    font: 700 29px/1 var(--display);
+}
+.nutri i { width: 20px; height: 20px; border-radius: 50%; background: var(--k, var(--c)); animation: pulse 2.4s ease-in-out infinite alternate; }
+.nutri:nth-child(1) i { --k: #3a9a4a; } .nutri:nth-child(2) i { --k: #efb02a; } .nutri:nth-child(3) i { --k: #d63f4d; }
+.nutri:nth-child(4) i { --k: #d8652a; } .nutri:nth-child(5) i { --k: #7b5ea7; } .nutri:nth-child(6) i { --k: #2f6fde; }
+
+.hyg .txt.big, .app-dis .txt.big { font-size: 38px; line-height: 1.5; font-weight: 500; }
+.badges { display: flex; gap: 70px; margin-top: 44px; }
+.badge { display: flex; align-items: center; gap: 22px; }
+.badge b { font: 800 64px/1 var(--display); color: var(--ck); }
+.disc, .box { display: grid; place-items: center; border-radius: 50%; background: var(--c); box-shadow: 0 16px 40px color-mix(in srgb, var(--c) 45%, transparent); }
+.disc { width: 112px; height: 112px; }
+.disc svg, .box svg { width: 62%; height: 62%; overflow: visible; }
+.tick { fill: none; stroke: #fff; stroke-width: 6; stroke-linecap: round; stroke-linejoin: round; stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 0.6s var(--ease); transition-delay: calc(var(--d, 0s) + var(--td, 0s) + 0.45s); }
+.visible .tick { stroke-dashoffset: 0; }
+
+.app-role { grid-template-columns: 1fr 520px; gap: 44px; }
+.app-role .col { gap: 22px; }
+.app-role .card { padding: 30px 38px; }
+.app-role .txt { font-size: 29px; }
+.app-role .pill { margin-bottom: 14px; }
+.fig.pyramid { width: 520px; }
+
+.app-dis { align-items: center; }
+.app-dis .card { padding: 44px 48px; }
+.app-dis .bl li { font-size: 31px; }
+
+.checks { list-style: none; display: grid; gap: 18px; margin-top: 30px; }
+.checks li {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+    padding: 20px 32px;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 16px 40px rgba(29, 42, 36, 0.09);
+    font: 600 33px/1.3 var(--body);
+}
+.checks .box { flex: none; width: 68px; height: 68px; border-radius: 18px; }
+
 </style>
 </head>
 <body>
@@ -1261,6 +1341,16 @@ tr.rv > td {
   </div>
 </div>
 </section>
+<section class="slide" data-transition="zoom" data-pdf-transition="fly" data-sec="4" data-mode="rail" data-blob="video" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">4. Tiêu hoá thức ăn trong ống tiêu hoá ở người</div><h2><span class="w" style="--d:0.13s">Mô</span> <span class="w" style="--d:0.18s">phỏng</span> <span class="w" style="--d:0.23s">3D</span> <span class="w" style="--d:0.28s">quá</span> <span class="w" style="--d:0.33s">trình</span> <span class="w" style="--d:0.38s">tiêu</span> <span class="w" style="--d:0.43s">hoá</span> <span class="w" style="--d:0.48s">ở</span> <span class="w" style="--d:0.53s">người</span></h2></header>
+  <div class="vwrap v3d pop" style="--d:.3s;--rot:0deg">
+    <video id="video3d" src="video/tieu-hoa-3d.mp4" poster="video/poster-3d.jpg" playsinline preload="metadata"></video>
+    <button class="vplay" type="button" aria-label="Phát / tạm dừng video">▶</button>
+  </div>
+</div>
+</section>
 <section class="slide" data-transition="wipe" data-pdf-transition="wipe" data-sec="4" data-mode="rail" data-blob="tr" >
 
 <div class="frame">
@@ -1369,14 +1459,71 @@ tr.rv > td {
   <ol class="toc toc-1"><li class="rv" style="--d:0.60s">1. Xây dựng chế độ ăn uống khoa học</li><li class="rv" style="--d:0.68s">2. Vai trò của việc sử dụng thực phẩm sạch trong đời sống</li><li class="rv" style="--d:0.76s">3. Các bệnh về tiêu hoá và cách phòng tránh</li></ol>
 </div>
 </section>
-<section class="slide" data-transition="zoom" data-pdf-transition="fly" data-sec="7" data-mode="rail" data-blob="video" >
+<section class="slide" data-transition="push" data-pdf-transition="push" data-sec="7" data-mode="rail" data-blob="tr" >
 
 <div class="frame">
-  <header class="hd"><div class="kick rv" style="--d:.05s">II. Ứng dụng</div></header>
-  <div class="vwrap pop" style="--d:.25s;--rot:0deg">
-    <video id="appVideo" src="video/ung-dung.mp4" poster="video/poster.jpg" playsinline preload="metadata"></video>
-    <button class="vplay" type="button" aria-label="Phát / tạm dừng video">▶</button>
+  <header class="hd"><div class="kick rv" style="--d:0.05s">II. Ứng dụng</div><h2><span class="w" style="--d:0.13s">1.</span> <span class="w" style="--d:0.18s">Xây</span> <span class="w" style="--d:0.23s">dựng</span> <span class="w" style="--d:0.28s">chế</span> <span class="w" style="--d:0.33s">độ</span> <span class="w" style="--d:0.38s">ăn</span> <span class="w" style="--d:0.43s">uống</span> <span class="w" style="--d:0.48s">khoa</span> <span class="w" style="--d:0.53s">học</span></h2><div class="track rv" style="--d:.2s"><span class="on"><i></i>1. Chế độ ăn uống</span><span class=""><i></i>2. Thực phẩm sạch</span><span class=""><i></i>3. Bệnh tiêu hoá</span></div></header>
+  <div class="split app-fig">
+    <div class="col">
+      <article class="card rv" style="--d:.3s"><h3 class="pill">Chế độ ăn đủ năng lượng:</h3><p class="txt">Cần cung cấp đủ năng lượng dựa trên <span class="mk">tuổi, giới tính và trạng thái sinh lý</span> (mang thai, cho con bú,...). Carbohydrate, lipid và protein là những chất cung cấp năng lượng (1g carbohydrate hoặc 1g protein cung cấp 4,1kcal, 1g lipid cung cấp 9,3kcal).</p></article>
+      <div class="kcal">
+        <div class="stat pop" style="--d:.9s;--rot:-2deg"><b>4,1kcal</b><span>1g carbohydrate hoặc 1g protein</span></div>
+        <div class="stat pop" style="--d:1.05s;--rot:2deg"><b>9,3kcal</b><span>1g lipid</span></div>
+      </div>
+    </div>
+    <figure class="fig pop portrait" style="--d:0.45s;"><i class="tape"></i><img src="images/bang-8-1-nhu-cau.png" alt="Bảng 8.1. Nhu cầu năng lượng và protein theo lứa tuổi và trạng thái sinh lí"></figure>
   </div>
+</div>
+</section>
+<section class="slide" data-transition="flip" data-pdf-transition="cover" data-sec="7" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">II. Ứng dụng</div><h2><span class="w" style="--d:0.13s">1.</span> <span class="w" style="--d:0.18s">Xây</span> <span class="w" style="--d:0.23s">dựng</span> <span class="w" style="--d:0.28s">chế</span> <span class="w" style="--d:0.33s">độ</span> <span class="w" style="--d:0.38s">ăn</span> <span class="w" style="--d:0.43s">uống</span> <span class="w" style="--d:0.48s">khoa</span> <span class="w" style="--d:0.53s">học</span></h2><div class="track rv" style="--d:.2s"><span class="on"><i></i>1. Chế độ ăn uống</span><span class=""><i></i>2. Thực phẩm sạch</span><span class=""><i></i>3. Bệnh tiêu hoá</span></div></header>
+  <div class="split app-fig">
+    <div class="col">
+      <article class="card rv" style="--d:.3s"><h3 class="pill">Đủ các chất dinh dưỡng và khối lượng:</h3><p class="txt">Cơ thể cần đủ <span class="mk">6 nhóm chất dinh dưỡng chính:</span> carbohydrate, lipid, protein, vitamin, khoáng chất và nước. Đặc biệt quan trọng là các chất dinh dưỡng thiết yếu và chất không sinh năng lượng nhưng vẫn cần cho sự phát triển của cơ thể như <span class="mk">chất xơ.</span></p></article>
+      <ul class="nutris"><li class="nutri rise" style="--d:0.80s"><i></i>carbohydrate</li><li class="nutri rise" style="--d:0.88s"><i></i>lipid</li><li class="nutri rise" style="--d:0.96s"><i></i>protein</li><li class="nutri rise" style="--d:1.04s"><i></i>vitamin</li><li class="nutri rise" style="--d:1.12s"><i></i>khoáng chất</li><li class="nutri rise" style="--d:1.20s"><i></i>nước</li></ul>
+    </div>
+    <figure class="fig pop portrait" style="--d:0.45s;"><i class="tape"></i><img src="images/danh-sach-di-cho.png" alt="Danh sách đi chợ cho các tín đồ healthy"></figure>
+  </div>
+</div>
+</section>
+<section class="slide" data-transition="blinds" data-pdf-transition="blinds" data-sec="7" data-mode="rail" data-blob="br" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">II. Ứng dụng</div><h2><span class="w" style="--d:0.13s">1.</span> <span class="w" style="--d:0.18s">Xây</span> <span class="w" style="--d:0.23s">dựng</span> <span class="w" style="--d:0.28s">chế</span> <span class="w" style="--d:0.33s">độ</span> <span class="w" style="--d:0.38s">ăn</span> <span class="w" style="--d:0.43s">uống</span> <span class="w" style="--d:0.48s">khoa</span> <span class="w" style="--d:0.53s">học</span></h2><div class="track rv" style="--d:.2s"><span class="on"><i></i>1. Chế độ ăn uống</span><span class=""><i></i>2. Thực phẩm sạch</span><span class=""><i></i>3. Bệnh tiêu hoá</span></div></header>
+  <article class="card hyg rv" style="--d:.3s"><h3 class="pill">Vệ sinh an toàn thực phẩm:</h3><p class="txt big">Thực phẩm phải <span class="mk">tươi, ngon, sạch.</span> Chế độ ăn uống cần đảm bảo vệ sinh, ăn uống điều độ, <span class="mk">tránh vận động ngay sau khi ăn</span> để phòng tránh các bệnh về tiêu hóa.</p></article>
+  <div class="badges"><div class="badge pop" style="--d:0.90s;--rot:0deg"><span class="disc"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span><b>tươi</b></div><div class="badge pop" style="--d:1.08s;--rot:0deg"><span class="disc"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span><b>ngon</b></div><div class="badge pop" style="--d:1.26s;--rot:0deg"><span class="disc"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span><b>sạch</b></div></div>
+</div>
+</section>
+<section class="slide" data-transition="cube" data-pdf-transition="push" data-sec="7" data-mode="rail" data-blob="tr" >
+
+<div class="frame long">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">II. Ứng dụng</div><h2><span class="w" style="--d:0.13s">2.</span> <span class="w" style="--d:0.18s">Vai</span> <span class="w" style="--d:0.23s">trò</span> <span class="w" style="--d:0.28s">của</span> <span class="w" style="--d:0.33s">việc</span> <span class="w" style="--d:0.38s">sử</span> <span class="w" style="--d:0.43s">dụng</span> <span class="w" style="--d:0.48s">thực</span> <span class="w" style="--d:0.53s">phẩm</span> <span class="w" style="--d:0.58s">sạch</span> <span class="w" style="--d:0.63s">trong</span> <span class="w" style="--d:0.68s">đời</span> <span class="w" style="--d:0.73s">sống</span></h2><div class="track rv" style="--d:.2s"><span class="past"><i></i>1. Chế độ ăn uống</span><span class="on"><i></i>2. Thực phẩm sạch</span><span class=""><i></i>3. Bệnh tiêu hoá</span></div></header>
+  <div class="split app-role">
+    <div class="col">
+      <article class="card rv" style="--d:.3s"><h3 class="pill">Cung cấp dinh dưỡng &amp; Tăng hiệu suất:</h3><p class="txt">Cung cấp các chất dinh dưỡng cần thiết cho cơ thể, tạo điều kiện tối ưu cho sự tồn tại và phát triển. Từ đó nâng cao năng suất lao động, tạo ra nhiều của cải, <span class="mk">giảm thiểu chi phí y tế và thời gian điều trị bệnh.</span></p></article>
+      <article class="card rv" style="--d:.45s"><h3 class="pill">Bảo vệ sức khỏe người dùng:</h3><p class="txt">An toàn cho người sử dụng, <span class="mk">tránh được các bệnh do tác nhân sinh học, hoá học, vật lí</span> trong thức ăn gây ra.</p></article>
+    </div>
+    <figure class="fig pop pyramid" style="--d:0.45s;"><i class="tape"></i><img src="images/thap-dinh-duong.png" alt="Tháp cân đối dinh dưỡng"></figure>
+  </div>
+</div>
+</section>
+<section class="slide" data-transition="diagonal" data-pdf-transition="wipe" data-sec="7" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">II. Ứng dụng</div><h2><span class="w" style="--d:0.13s">3.</span> <span class="w" style="--d:0.18s">Các</span> <span class="w" style="--d:0.23s">bệnh</span> <span class="w" style="--d:0.28s">về</span> <span class="w" style="--d:0.33s">tiêu</span> <span class="w" style="--d:0.38s">hoá</span> <span class="w" style="--d:0.43s">và</span> <span class="w" style="--d:0.48s">cách</span> <span class="w" style="--d:0.53s">phòng</span> <span class="w" style="--d:0.58s">tránh</span></h2><div class="track rv" style="--d:.2s"><span class="past"><i></i>1. Chế độ ăn uống</span><span class="past"><i></i>2. Thực phẩm sạch</span><span class="on"><i></i>3. Bệnh tiêu hoá</span></div></header>
+  <div class="duo app-dis">
+    <article class="card flip" style="--d:.3s"><h3 class="pill">Các bệnh tiêu hóa thường gặp:</h3><p class="txt big">Tiêu chảy, viêm loét dạ dày - tá tràng, ung thư đại tràng,...</p></article>
+    <article class="card flip" style="--d:.45s"><h3 class="pill">Nguyên nhân:</h3><ul class="bl"><li class="rv" style="--d:0.65s">Do ăn uống không đảm bảo vệ sinh.</li><li class="rv" style="--d:0.80s">Do lối sống không lành mạnh: chế độ ăn không cân đối, ăn thực phẩm không phù hợp, uống nhiều rượu bia, hút nhiều thuốc lá, thời gian ăn uống tuỳ tiện,...</li></ul></article>
+  </div>
+</div>
+</section>
+<section class="slide" data-transition="split" data-pdf-transition="split" data-sec="7" data-mode="rail" data-blob="br" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">3. Các bệnh về tiêu hoá và cách phòng tránh</div><h2><span class="w" style="--d:0.13s">Biện</span> <span class="w" style="--d:0.18s">pháp</span> <span class="w" style="--d:0.23s">phòng</span> <span class="w" style="--d:0.28s">tránh:</span></h2><div class="track rv" style="--d:.2s"><span class="past"><i></i>1. Chế độ ăn uống</span><span class="past"><i></i>2. Thực phẩm sạch</span><span class="on"><i></i>3. Bệnh tiêu hoá</span></div></header>
+  <ul class="checks"><li class="rv" style="--d:0.35s"><span class="box"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span>Có chế độ ăn đủ chất, đủ lượng.</li><li class="rv" style="--d:0.47s"><span class="box"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span>Hạn chế đồ mặn, đồ chiên xào.</li><li class="rv" style="--d:0.59s"><span class="box"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span>Đảm bảo vệ sinh an toàn thực phẩm.</li><li class="rv" style="--d:0.71s"><span class="box"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span>Ăn uống điều độ, tránh vận động ngay sau khi ăn.</li><li class="rv" style="--d:0.83s"><span class="box"><svg viewBox="0 0 48 48" aria-hidden="true"><path class="tick" pathLength="1" d="M12 25 L21 34 L37 15"/></svg></span>Áp dụng các biện pháp phòng tránh phù hợp với từng bệnh cụ thể.</li></ul>
 </div>
 </section>
 
