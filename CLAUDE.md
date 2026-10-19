@@ -36,7 +36,9 @@ Ghi chú:
 - Video giải thích một chủ đề (vd. phần “Ứng dụng” của bài) → `faceless-explainer`; đoạn motion ngắn dưới 10 giây → `motion-graphics`.
 - Lần đầu render HyperFrames cần `npx hyperframes browser ensure` (tải Chrome Headless Shell, đã chạy được ở cloud). `npx hyperframes doctor` để kiểm tra.
 - Lồng tiếng (TTS) và nhạc nền cục bộ chưa cài; hỏi người dùng trước khi cài thêm.
-- Video dự án đặt ở `videos/<tên>/`. Muốn đưa video vào deck thì xuất MP4 rồi nhúng `<video>` vào slide; trong PDF chỉ còn khung hình tĩnh, nên kèm link hoặc mã QR tới video.
+- Video dự án đặt ở `videos/<tên>/`. Muốn đưa video vào deck thì xuất MP4 rồi nhúng `<video>` vào slide; trong PDF chỉ còn khung hình tĩnh, nên chèn ảnh các cảnh ngay sau slide video: `ffmpeg -ss <giây> -i video.mp4 -frames:v 1 canh.jpg` rồi `node tools/insert-images.mjs deck.pdf <số trang slide video> out.pdf canh*.jpg`.
+- HyperFrames ở cloud: CDN jsdelivr bị chặn → chép `gsap.min.js` từ npm (`npm pack gsap`) vào `assets/vendor/`; font phải có `@font-face` trỏ file cục bộ ngay trong `index.html`; di chuyển phần tử bằng `x`/`y` (transform), không dùng `left`/`top` (lint báo lỗi vì giật hình). Chạy `npx hyperframes check` đến khi đạt, xem `snapshot --at` trước khi `render` (~10 khung/giây ở cloud).
+- Ví dụ hoàn chỉnh: `decks/bai-8-he-tieu-hoa/` (deck) và `videos/bai-8-ung-dung/` (video nhúng trong deck).
 
 ## Quy tắc khi làm slide
 
@@ -49,6 +51,9 @@ Ghi chú:
 - Hiệu ứng nên viết bằng CSS transition/animation hoặc Web Animations API: công cụ xuất PDF tua nhanh được các hiệu ứng này. Hiệu ứng chạy bằng `requestAnimationFrame`/`setInterval` (ví dụ bộ đếm số) phải đạt trạng thái cuối trong khoảng `--wait`.
 - Hiệu ứng lặp vô hạn bị chụp ở thời điểm ngẫu nhiên. Nếu trạng thái chụp quan trọng, đặt `animation-play-state: paused` với `animation-delay` âm để cố định khung hình đẹp nhất.
 - Sau khi dựng, luôn xuất PDF rồi xem ảnh từng trang (`pdftoppm -r 50 -png deck.pdf /tmp/p`) để kiểm tra tràn chữ, chồng lấn, lỗi font.
+- Chữ gradient (`background-clip: text`) hoặc dòng có `overflow: hidden` + `line-height` thấp sẽ **cắt mất dấu tiếng Việt** (Ở → Ơ, Ộ → O). Thêm padding trên/dưới ~0.16em cho phần tử đó.
+- Chữ trắng trên nền màu cần tương phản ≥ 3:1 (chữ lớn). Bảng màu đã kiểm: xanh lá `#3a9a4a`, xanh ngọc `#178a79`, đỏ san hô `#d63f4d`, cam `#d8652a`, tím `#7b5ea7`, xanh dương `#2f6fde`; vàng `#efb02a` phải dùng chữ tối.
+- Khi người dùng yêu cầu giữ nguyên nội dung: chép đúng từng chữ (chỉ sửa lỗi chính tả và báo lại), rồi đối chiếu tự động từng dòng của tài liệu gốc với chữ trong HTML trước khi giao.
 
 ## Xuất PDF có hiệu ứng (`tools/export-pdf.mjs`)
 

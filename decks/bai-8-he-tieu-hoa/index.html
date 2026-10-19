@@ -1,0 +1,1355 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 8: Hệ tiêu hóa ở động vật</title>
+<!-- Fonts are bundled locally (Lexend + Be Vietnam Pro, Vietnamese subset) so the deck works offline -->
+<link rel="stylesheet" href="fonts/fonts.css">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   FIXED 16:9 STAGE (viewport-base.css, verbatim)
+   =========================================== */
+/* ===========================================
+   FIXED 16:9 STAGE: MANDATORY BASE STYLES
+   Include this ENTIRE file in every presentation.
+   Slides are authored at 1920×1080 and scaled as a whole.
+   =========================================== */
+
+/* 1. Lock the browser viewport */
+html,
+body {
+    width: 100%;
+    height: 100%;
+    margin: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 2. Full-window deck viewport */
+.deck-viewport {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    background: var(--stage-bg, #000);
+}
+
+/* 3. Fixed 16:9 design canvas.
+   JavaScript sets transform: translate(...) scale(...). */
+.deck-stage {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    transform-origin: 0 0;
+    background: var(--slide-bg, #fff);
+}
+
+/* 4. Slides stack inside the fixed stage.
+   Content must be laid out at 1920×1080, not reflowed per device. */
+.slide {
+    position: absolute;
+    inset: 0;
+    width: 1920px;
+    height: 1080px;
+    overflow: hidden;
+    display: block;
+    visibility: hidden;
+    opacity: 0;
+    pointer-events: none;
+    background: var(--slide-bg, #fff);
+}
+
+.slide.active,
+.slide.visible {
+    visibility: visible;
+    opacity: 1;
+    pointer-events: auto;
+    z-index: 1;
+}
+
+/* 5. Keep media inside authored slide bounds */
+img,
+video,
+canvas,
+svg {
+    max-width: 100%;
+    max-height: 100%;
+}
+
+/* 6. Presentation chrome stays outside the slide design system */
+.deck-controls {
+    position: fixed;
+    left: 50%;
+    bottom: 22px;
+    transform: translateX(-50%);
+    z-index: 1000;
+}
+
+/* 7. Print one fixed-size slide per page */
+@media print {
+    html,
+    body {
+        width: 1920px;
+        height: auto;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-viewport {
+        position: static;
+        overflow: visible;
+        background: #fff;
+    }
+
+    .deck-stage {
+        position: static;
+        width: auto;
+        height: auto;
+        transform: none !important;
+        background: none;
+    }
+
+    .slide {
+        position: relative;
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        pointer-events: auto !important;
+        width: 1920px;
+        height: 1080px;
+        break-after: page;
+        page-break-after: always;
+    }
+
+    .slide:last-child {
+        break-after: auto;
+        page-break-after: auto;
+    }
+
+    .deck-controls {
+        display: none !important;
+    }
+}
+
+/* 8. Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+        animation-duration: 0.01ms !important;
+        transition-duration: 0.2s !important;
+    }
+}
+
+
+/* ===========================================
+   SECTION COLOURS — one per chapter tab
+   =========================================== */
+[data-sec="1"] { --c: #178a79; --ct: #ffffff; --ck: #13786a; }
+[data-sec="2"] { --c: #3a9a4a; --ct: #ffffff; --ck: #2f7d3c; }
+[data-sec="3"] { --c: #efb02a; --ct: #2b1d00; --ck: #946000; }
+[data-sec="4"] { --c: #d8652a; --ct: #ffffff; --ck: #c0521a; }
+[data-sec="5"] { --c: #d63f4d; --ct: #ffffff; --ck: #bf2f3d; }
+[data-sec="6"] { --c: #7b5ea7; --ct: #ffffff; --ck: #5f4590; }
+[data-sec="7"] { --c: #2f6fde; --ct: #ffffff; --ck: #1f55b8; }
+[data-sec="0"] { --c: #178a79; --ct: #ffffff; --ck: #13786a; }
+
+/* ===========================================
+   THEME TOKENS
+   --c (section fill) is a registered property so the
+   background blobs can tween between chapter colours.
+   =========================================== */
+@property --c { syntax: '<color>'; inherits: true; initial-value: #178a79; }
+
+:root {
+    --paper: #f4efe6;
+    --ink: #1d2a24;
+    --muted: #56655d;
+    --stage-bg: #f4efe6;
+    --slide-bg: transparent;
+    --display: 'Lexend', sans-serif;
+    --body: 'Be Vietnam Pro', sans-serif;
+    --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    --spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.deck-stage {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--body);
+    transition: --c 1s ease;
+}
+
+/* Slides sit above the chapter rail; only their content takes clicks */
+.deck-stage .slide { z-index: 4; transition: opacity 0.6s ease, visibility 0s linear 0.6s; }
+.deck-stage .slide.active { z-index: 6; pointer-events: none; transition: opacity 0.6s ease 0.12s, visibility 0s; }
+.deck-stage .slide.active > * { pointer-events: auto; }
+
+/* ===========================================
+   BACKGROUND: organic blobs that morph in shape
+   and glide to a new spot on every slide
+   =========================================== */
+.bg { position: absolute; inset: 0; overflow: hidden; z-index: 0; }
+
+.blob {
+    position: absolute;
+    left: 0;
+    top: 0;
+    border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%;
+    animation: morph 16s ease-in-out infinite alternate;
+    transition: translate 1.4s var(--ease), scale 1.4s var(--ease);
+}
+
+.b1 { width: 820px; height: 820px; background: color-mix(in srgb, var(--c) 24%, var(--paper)); }
+.b2 { width: 460px; height: 460px; background: #ffd9bd; animation-duration: 12s; }
+
+@keyframes morph {
+    0%   { border-radius: 42% 58% 63% 37% / 41% 44% 56% 59%; rotate: 0deg; }
+    50%  { border-radius: 63% 37% 38% 62% / 55% 61% 39% 45%; }
+    100% { border-radius: 36% 64% 52% 48% / 33% 52% 48% 67%; rotate: 30deg; }
+}
+
+[data-blob="home"]  .b1 { translate: 1330px -250px; }
+[data-blob="home"]  .b2 { translate: 1150px 790px; }
+[data-blob="tr"]    .b1 { translate: 1450px -440px; scale: 0.85; }
+[data-blob="tr"]    .b2 { translate: 380px 880px; scale: 0.7; }
+[data-blob="br"]    .b1 { translate: 1400px 560px; scale: 0.8; }
+[data-blob="br"]    .b2 { translate: 1560px -280px; scale: 0.8; }
+[data-blob="bl"]    .b1 { translate: 200px 660px; scale: 0.75; }
+[data-blob="bl"]    .b2 { translate: 1620px -220px; scale: 0.9; }
+[data-blob="flood"] .b1 { translate: 700px 140px; scale: 1.2; }
+[data-blob="flood"] .b2 { translate: 1300px 700px; }
+[data-blob="video"] .b1 { translate: 1500px -470px; scale: 0.7; }
+[data-blob="video"] .b2 { translate: 340px 900px; scale: 0.6; }
+
+.grain {
+    position: absolute;
+    inset: 0;
+    opacity: 0.08;
+    mix-blend-mode: multiply;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.8' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ===========================================
+   CHAPTER RAIL — the morphing tabs
+   JS sets left/width per slide; CSS tweens them.
+   =========================================== */
+.rail { position: absolute; left: 0; top: 0; bottom: 0; width: 0; z-index: 3; }
+
+.tab {
+    position: absolute;
+    top: 0;
+    height: 1080px;
+    left: 0;
+    width: 120px;
+    background: var(--tc);
+    border-radius: 0 32px 32px 0;
+    box-shadow: 8px 0 26px rgba(29, 42, 36, 0.16);
+    cursor: pointer;
+    overflow: hidden;
+    transition: left 1s var(--ease), width 1s var(--ease), border-radius 0.8s var(--ease);
+}
+
+.tab b,
+.tab span {
+    position: absolute;
+    left: var(--cx, 60px);
+    translate: -50% 0;
+    color: var(--tt);
+    transition: left 1s var(--ease), opacity 0.5s ease, font-size 0.6s var(--ease);
+}
+
+.tab b { top: 40px; font: 800 34px/1 var(--display); opacity: 0.92; }
+
+.tab span {
+    bottom: 60px;
+    writing-mode: vertical-rl;
+    rotate: 180deg;
+    font: 700 27px/1 var(--display);
+    white-space: nowrap;
+    opacity: 0;
+}
+
+.tab.show-label span { opacity: 1; }
+.tab.mini b { font-size: 21px; }
+.tab.flooded { border-radius: 0; }
+.tab.flooded b, .tab.flooded span { opacity: 0; }
+
+.pageno {
+    position: absolute;
+    right: 56px;
+    bottom: 38px;
+    z-index: 7;
+    font: 600 20px/1 var(--display);
+    letter-spacing: 0.08em;
+    color: var(--muted);
+}
+
+.deck-stage[data-mode="flood"] .pageno { color: rgba(255, 255, 255, 0.8); }
+
+/* ===========================================
+   ENTRY ANIMATIONS — fire when a slide gets .visible
+   Stagger with style="--d: .3s"
+   =========================================== */
+.rv {
+    opacity: 0;
+    translate: 0 36px;
+    transition: opacity 0.8s var(--ease), translate 0.9s var(--ease);
+    transition-delay: var(--d, 0s);
+}
+
+.pop {
+    opacity: 0;
+    scale: 0.85;
+    rotate: -5deg;
+    transition: opacity 0.6s ease, scale 1s var(--spring), rotate 1s var(--spring);
+    transition-delay: var(--d, 0s);
+}
+
+.flip {
+    opacity: 0;
+    transform: perspective(1400px) rotateY(50deg) translateX(80px);
+    transform-origin: left center;
+    transition: opacity 0.7s ease, transform 1.1s var(--ease);
+    transition-delay: var(--d, 0s);
+}
+
+.rise {
+    opacity: 0;
+    translate: 0 150px;
+    scale: 0.6;
+    transition: opacity 0.6s ease, translate 1.1s var(--spring), scale 1.1s var(--spring);
+    transition-delay: var(--d, 0s);
+}
+
+.w {
+    display: inline-block;
+    opacity: 0;
+    translate: 0 0.5em;
+    rotate: 5deg;
+    transition: opacity 0.6s ease, translate 0.9s var(--spring), rotate 0.9s var(--spring);
+    transition-delay: var(--d, 0s);
+}
+
+.visible .rv, .visible .w { opacity: 1; translate: 0 0; rotate: 0deg; }
+.visible .pop { opacity: 1; scale: 1; rotate: var(--rot, -1.5deg); }
+.visible .flip { opacity: 1; transform: none; }
+.visible .rise { opacity: 1; translate: 0 0; scale: 1; }
+
+/* ===========================================
+   SHARED CONTENT COMPONENTS
+   =========================================== */
+.frame {
+    position: absolute;
+    top: 84px;
+    bottom: 90px;
+    left: 440px;
+    right: 110px;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Centre the content block in the space left under the header */
+.frame > .hd { margin-bottom: 30px; }
+.frame > .hd + * { margin-top: auto !important; }
+.frame > :last-child { margin-bottom: auto; }
+
+.hd .kick {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    font: 700 23px/1.2 var(--display);
+    letter-spacing: 0.04em;
+    color: var(--ck);
+}
+
+.hd .kick::before { content: ''; width: 40px; height: 8px; border-radius: 4px; background: var(--c); }
+
+.hd h2 {
+    margin-top: 12px;
+    font: 800 62px/1.14 var(--display);
+    letter-spacing: -0.025em;
+}
+
+.card {
+    position: relative;
+    background: #fff;
+    border-radius: 28px;
+    padding: 38px 44px;
+    box-shadow: 0 2px 0 rgba(29, 42, 36, 0.04), 0 24px 60px rgba(29, 42, 36, 0.1);
+}
+
+.pill {
+    display: inline-block;
+    margin-bottom: 20px;
+    padding: 12px 22px;
+    border-radius: 999px;
+    background: var(--c);
+    color: var(--ct);
+    font: 700 27px/1 var(--display);
+}
+
+.bl { list-style: none; display: grid; gap: 16px; }
+
+.bl li { position: relative; padding-left: 40px; font-size: 31px; line-height: 1.45; }
+
+.bl li::before {
+    content: '';
+    position: absolute;
+    left: 4px;
+    top: 0.5em;
+    width: 15px;
+    height: 15px;
+    border-radius: 4px;
+    background: var(--c);
+    rotate: 45deg;
+}
+
+.txt { font-size: 31px; line-height: 1.5; }
+.lead { margin-top: 26px; font-size: 33px; line-height: 1.5; }
+.lead.big { font-size: 38px; font-weight: 600; }
+.hd .lead { margin-top: 18px; }
+
+.strip {
+    margin-top: 26px;
+    padding: 22px 30px;
+    border-radius: 18px;
+    border-left: 10px solid var(--c);
+    background: color-mix(in srgb, var(--c) 14%, #fff);
+    font-size: 31px;
+    line-height: 1.45;
+}
+
+.split { display: grid; gap: 40px; align-items: center; margin-top: 30px; flex: 1; min-height: 0; }
+.col { display: grid; gap: 24px; align-content: center; }
+
+.fig {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    padding: 18px;
+    border-radius: 24px;
+    background: #fff;
+    box-shadow: 0 24px 60px rgba(29, 42, 36, 0.14);
+}
+
+.fig img { display: block; width: 100%; height: auto; }
+
+.fig figcaption {
+    margin-top: 10px;
+    text-align: center;
+    font-size: 22px;
+    font-style: italic;
+    color: var(--muted);
+}
+
+.tape {
+    position: absolute;
+    top: -16px;
+    left: 50%;
+    z-index: 2;
+    width: 130px;
+    height: 34px;
+    margin-left: -65px;
+    background: color-mix(in srgb, var(--c) 60%, #fff);
+    opacity: 0.85;
+    rotate: -3deg;
+}
+
+/* Line-drawing for SVG paths with pathLength="1" */
+.draw { stroke-dasharray: 1; stroke-dashoffset: 1; transition: stroke-dashoffset 2.4s var(--ease) 0.6s; }
+.visible .draw { stroke-dashoffset: 0; }
+
+/* ===========================================
+   SLIDE: TITLE
+   =========================================== */
+.title-frame {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 770px;
+    right: 120px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.kicker { font: 800 40px/1 var(--display); letter-spacing: 0.16em; color: #178a79; }
+
+h1 {
+    margin-top: 24px;
+    font: 800 124px/1.1 var(--display);
+    letter-spacing: -0.035em;
+}
+
+h1 .hl { color: #d63f4d; }
+
+.parts { display: flex; flex-wrap: wrap; gap: 16px; margin-top: 56px; }
+
+.part {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    padding: 16px 26px;
+    border-radius: 999px;
+    background: #fff;
+    box-shadow: 0 14px 40px rgba(29, 42, 36, 0.1);
+    font: 700 24px/1 var(--display);
+}
+
+.part i { width: 16px; height: 16px; border-radius: 50%; }
+
+.gut { position: absolute; right: 60px; bottom: 50px; width: 340px; height: 417px; overflow: visible; }
+.gut path { fill: none; stroke: #d8652a; stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; opacity: 0.55; }
+.gut .bolus {
+    fill: #178a79;
+    offset-path: path('M300 20 C300 90 300 120 300 170 C300 230 220 230 210 290 C200 350 330 360 400 330 C470 300 470 250 420 240 C360 228 330 300 380 330 M210 300 C150 360 140 430 200 450 C260 470 330 430 380 450 C430 470 440 520 390 540 C330 565 240 530 190 560 C140 590 160 650 220 660 C300 672 380 640 440 660 C500 680 500 720 450 740');
+    offset-rotate: 0deg;
+    animation: travel 9s linear infinite;
+}
+
+@keyframes travel { from { offset-distance: 0%; } to { offset-distance: 100%; } }
+
+/* ===========================================
+   SLIDE: CHAPTER DIVIDERS (the tab floods the screen)
+   =========================================== */
+.flood-frame {
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 170px;
+    right: 140px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    color: var(--ct);
+}
+
+.big-num { font: 800 210px/0.9 var(--display); opacity: 0.35; --rot: 0deg; }
+.flood-title { margin-top: 6px; font: 800 112px/1.05 var(--display); letter-spacing: -0.03em; }
+
+.toc {
+    list-style: none;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px 60px;
+    margin-top: 64px;
+    max-width: 1500px;
+}
+
+.toc.toc-1 { grid-template-columns: 1fr; }
+
+.toc li {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+    font: 600 30px/1.3 var(--body);
+}
+
+.toc b {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.22);
+    font: 800 24px/1 var(--display);
+}
+
+/* ===========================================
+   SLIDE: 4 STAGES OF NUTRITION
+   =========================================== */
+.def { margin-top: 34px; font-size: 33px; line-height: 1.5; }
+.def b { color: var(--ck); }
+
+.stages { position: relative; display: grid; grid-template-columns: repeat(4, 1fr); gap: 32px; margin-top: 28px; }
+
+.stage {
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+    border-radius: 26px;
+    background: #fff;
+    box-shadow: 0 24px 60px rgba(29, 42, 36, 0.12);
+}
+
+.stage-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 190px;
+    padding: 0 32px;
+    background: var(--c);
+    color: #fff;
+}
+
+.stage-top span { font: 800 112px/1 var(--display); }
+.stage-top svg { width: 96px; height: 96px; fill: none; stroke: #fff; stroke-width: 4; stroke-linecap: round; stroke-linejoin: round; }
+.stage p { padding: 30px 32px 36px; font: 600 35px/1.3 var(--display); }
+
+.stages .stage:nth-child(1) { --c: #3a9a4a; }
+.stages .stage:nth-child(2) { --c: #efb02a; }
+.stages .stage:nth-child(3) { --c: #d63f4d; }
+.stages .stage:nth-child(4) { --c: #7b5ea7; }
+
+.stage-line { position: absolute; left: 0; right: 0; bottom: -36px; width: 100%; height: 40px; }
+.stage-line path { fill: none; stroke: var(--c); stroke-width: 6; stroke-linecap: round; stroke-dasharray: 1; }
+
+/* ===========================================
+   SLIDE: FEEDING FIGURE & 3 KINDS
+   =========================================== */
+.center-fig { flex: 1; display: flex; align-items: center; justify-content: center; min-height: 0; }
+.fig.wide { width: 1060px; }
+
+.kinds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; margin-top: 40px; align-items: stretch; }
+.kind { padding: 36px 36px 40px; }
+.kind-hd { display: flex; align-items: center; gap: 18px; margin-bottom: 22px; }
+
+.kind-hd span {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 76px;
+    height: 76px;
+    border-radius: 50%;
+    background: var(--c);
+    color: var(--ct);
+    font: 800 40px/1 var(--display);
+}
+
+.kind-hd h3 { font: 700 32px/1.25 var(--display); }
+.kind .bl li { font-size: 29px; }
+
+/* ===========================================
+   SLIDE: DIGESTION CONCEPT (polymer breaks into beads)
+   =========================================== */
+.concept { flex: 1; display: flex; flex-direction: column; justify-content: center; }
+.tag { align-self: flex-start; padding: 12px 24px; border-radius: 999px; background: var(--c); color: var(--ct); font: 700 26px/1 var(--display); }
+.statement { margin-top: 34px; max-width: 1340px; font: 600 54px/1.38 var(--body); letter-spacing: -0.01em; }
+.statement b { color: var(--ck); }
+
+.chain { width: 1000px; height: 225px; margin-top: 56px; overflow: visible; }
+.chain .link { stroke: var(--ck); stroke-width: 10; stroke-linecap: round; transition: opacity 0.4s ease 1.3s; }
+.chain .bead {
+    fill: var(--c);
+    stroke: var(--ck);
+    stroke-width: 5;
+    transition: translate 1.2s var(--spring) 1.3s;
+    animation: bob 3s ease-in-out infinite alternate;
+    animation-delay: calc(var(--i) * -0.4s);
+}
+
+.visible .chain .link { opacity: 0; }
+.visible .chain .bead { translate: calc((var(--i) - 3.5) * 30px) 0; }
+
+@keyframes bob { from { transform: translateY(-8px); } to { transform: translateY(10px); } }
+
+/* ===========================================
+   SLIDES: INTRA/EXTRACELLULAR DIGESTION
+   =========================================== */
+.split:has(> .form-card) { grid-template-columns: 1fr 700px; }
+.split.rev:has(> .form-card) { grid-template-columns: 720px 1fr; }
+.form-card .bl { gap: 22px; }
+.form-card .bl li { font-size: 33px; }
+
+/* ===========================================
+   SLIDE: TABLES
+   =========================================== */
+.tbl { width: 100%; margin-top: 34px; border-collapse: separate; border-spacing: 0 14px; }
+
+.tbl th {
+    padding: 0 32px;
+    text-align: left;
+    font: 700 27px/1.2 var(--display);
+    color: var(--ck);
+}
+
+.tbl td {
+    padding: 36px 32px;
+    background: #fff;
+    font-size: 33px;
+    line-height: 1.4;
+    vertical-align: middle;
+    box-shadow: 0 14px 34px rgba(29, 42, 36, 0.07);
+}
+
+.tbl td:first-child { border-radius: 20px 0 0 20px; font-weight: 700; }
+.tbl td:last-child { border-radius: 0 20px 20px 0; }
+.tbl tr > td:first-child { border-left: 10px solid var(--c); }
+
+.tbl .first { display: flex; align-items: center; gap: 20px; }
+.tbl .ico { flex: none; width: 72px; height: 72px; }
+.tbl .ico svg { width: 100%; height: 100%; fill: none; stroke: var(--ck); stroke-width: 5; stroke-linecap: round; }
+.tbl .ico .fill { fill: var(--c); stroke: none; }
+
+.tbl.compact td { padding: 22px 28px; font-size: 29px; }
+.tbl .arrow { margin-right: 12px; font-weight: 800; color: var(--ck); }
+
+/* ===========================================
+   SLIDE: SAC vs TUBE (animated food particle)
+   =========================================== */
+.duo { display: grid; grid-template-columns: 1fr 1fr; gap: 36px; margin-top: 30px; align-items: stretch; }
+.duo-card h3 { font: 700 33px/1.25 var(--display); color: var(--ck); margin: 12px 0 20px; }
+.duo-card .bl li { font-size: 29px; }
+.anim-fig { display: block; width: 100%; height: 180px; overflow: visible; }
+.organ { fill: none; stroke: color-mix(in srgb, var(--c) 45%, #fff); stroke-width: 22; stroke-linecap: round; stroke-linejoin: round; }
+.food { fill: #d8652a; offset-rotate: 0deg; }
+
+.sac-food { offset-path: path('M160 -10 C160 40 160 80 160 112'); animation: dip 4s ease-in-out infinite alternate; }
+.tube-food { offset-path: path('M20 40 C120 40 110 90 160 90 C210 90 200 140 300 140'); animation: travel 4s linear infinite; }
+
+@keyframes dip { 0%, 10% { offset-distance: 0%; scale: 1; } 70%, 100% { offset-distance: 100%; scale: 0.45; } }
+
+/* ===========================================
+   SLIDES: HUMAN DIGESTIVE TRACT
+   =========================================== */
+.intro4 { grid-template-columns: 1fr 470px; }
+.intro4 .lead { margin-top: 0; }
+.fig.tall { width: 470px; }
+
+.journey { list-style: none; display: grid; gap: 4px; margin-top: 18px; }
+
+.journey li {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+    padding: 14px 0;
+    font: 600 33px/1.2 var(--display);
+}
+
+.journey li span {
+    flex: none;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: 6px solid var(--c);
+    background: #fff;
+}
+
+.journey li + li::before {
+    content: '';
+    position: absolute;
+    left: 11px;
+    top: -14px;
+    width: 6px;
+    height: 28px;
+    border-radius: 3px;
+    background: color-mix(in srgb, var(--c) 45%, #fff);
+}
+
+.track { display: flex; align-items: center; gap: 18px; margin-top: 18px; }
+
+.track span {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    font: 600 22px/1 var(--display);
+    color: var(--muted);
+}
+
+.track span + span::before {
+    content: '';
+    width: 56px;
+    height: 4px;
+    margin-right: 8px;
+    border-radius: 2px;
+    background: color-mix(in srgb, var(--muted) 35%, transparent);
+}
+
+.track i { width: 18px; height: 18px; border-radius: 50%; border: 4px solid currentColor; }
+.track .past i { background: currentColor; }
+.track .on { color: var(--ck); font-weight: 800; }
+.track .on i { background: var(--c); border-color: var(--c); box-shadow: 0 0 0 7px color-mix(in srgb, var(--c) 25%, transparent); }
+
+.mechs { display: grid; grid-template-columns: 1fr 1fr; gap: 34px; margin-top: 30px; align-items: stretch; }
+
+.stomach { grid-template-columns: 1fr 560px; margin-top: 24px; }
+.stomach .col { gap: 22px; }
+.stomach .mech { padding: 30px 38px; }
+
+.villi { position: absolute; left: 0; bottom: -40px; width: 100%; height: 110px; transform-origin: bottom; animation: sway 3.5s ease-in-out infinite alternate; }
+.villi path { fill: color-mix(in srgb, var(--c) 30%, #fff); stroke: color-mix(in srgb, var(--c) 70%, #fff); stroke-width: 4; }
+
+@keyframes sway { from { scale: 1 0.9; } to { scale: 1 1.06; } }
+
+.note-row { grid-template-columns: 1fr 720px; margin-top: 18px; }
+.note { padding: 30px 34px; border-radius: 20px; border-left: 10px solid var(--c); background: color-mix(in srgb, var(--c) 14%, #fff); font-size: 31px; line-height: 1.45; }
+.fig.bile { width: 720px; }
+
+.colon { grid-template-columns: 1fr 480px; gap: 70px; }
+.colon .card { padding: 50px 54px; }
+.colon .bl { gap: 30px; }
+.colon .bl li { font-size: 35px; }
+.colon-fig { width: 480px; height: 440px; overflow: visible; }
+.organ.thick { stroke-width: 54; }
+.colon-food { offset-path: path('M70 400 V90 C70 50 100 40 140 40 H320 C360 40 390 50 390 90 V300 C390 340 360 350 320 350 H250 V400'); animation: travel 7s linear infinite; fill: #8a5a2b; }
+.colon-food.f2 { animation-delay: -2.3s; }
+.colon-food.f3 { animation-delay: -4.6s; }
+
+/* ===========================================
+   SLIDES: ABSORPTION
+   =========================================== */
+.absorb { grid-template-columns: 1fr 620px; }
+.absorb .col { gap: 24px; }
+
+.stat {
+    --rot: 2deg;
+    justify-self: center;
+    padding: 20px 40px;
+    border-radius: 999px;
+    background: var(--c);
+    color: var(--ct);
+    box-shadow: 0 20px 50px color-mix(in srgb, var(--c) 40%, transparent);
+}
+
+.stat b { font: 800 60px/1 var(--display); letter-spacing: -0.02em; }
+
+.mols { list-style: none; display: grid; grid-template-columns: repeat(2, 1fr); gap: 26px 34px; margin-top: 48px; }
+
+.mol {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    min-height: 130px;
+    padding: 26px 34px;
+    border-radius: 26px;
+    background: #fff;
+    box-shadow: 0 20px 50px rgba(29, 42, 36, 0.1);
+    font: 600 33px/1.35 var(--body);
+}
+
+.mol i {
+    flex: none;
+    width: 58px;
+    height: 58px;
+    border-radius: 50%;
+    border: 10px solid var(--c);
+    background: color-mix(in srgb, var(--c) 30%, #fff);
+    animation: pulse 2.4s ease-in-out infinite alternate;
+}
+
+@keyframes pulse { from { scale: 0.85; } to { scale: 1.1; } }
+
+.mols + .strip { margin-top: 44px; }
+
+/* ===========================================
+   SLIDE: ASSIMILATION
+   =========================================== */
+.assim { display: grid; grid-template-columns: 440px 1fr; gap: 64px; align-items: center; margin-top: 34px; }
+.cell-big { width: 440px; height: 440px; overflow: visible; }
+.cell-big .membrane { fill: color-mix(in srgb, var(--c) 14%, #fff); stroke: var(--c); stroke-width: 12; transform-origin: 150px 150px; animation: breathe 3s ease-in-out infinite alternate; }
+.cell-big .nucleus { fill: var(--c); opacity: 0.85; }
+.cell-big .org { fill: color-mix(in srgb, var(--c) 45%, #fff); }
+
+@keyframes breathe { from { scale: 0.97; } to { scale: 1.04; } }
+
+.uses { list-style: none; display: grid; gap: 16px; }
+
+.use {
+    display: flex;
+    align-items: center;
+    gap: 22px;
+    padding: 22px 32px;
+    border-radius: 22px;
+    background: #fff;
+    box-shadow: 0 16px 40px rgba(29, 42, 36, 0.09);
+    font: 600 33px/1.3 var(--body);
+}
+
+.use b {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    background: var(--c);
+    color: var(--ct);
+    font: 800 24px/1 var(--display);
+}
+
+/* ===========================================
+   SLIDE: VIDEO
+   =========================================== */
+.vwrap {
+    position: relative;
+    width: 1320px;
+    aspect-ratio: 16 / 9;
+    margin-top: 28px;
+    overflow: hidden;
+    border-radius: 30px;
+    background: #10231c;
+    box-shadow: 0 40px 100px rgba(29, 42, 36, 0.3);
+}
+
+.vwrap video { display: block; width: 100%; height: 100%; object-fit: cover; }
+
+.vplay {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 132px;
+    height: 132px;
+    margin: -66px 0 0 -66px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.92);
+    color: var(--c);
+    font-size: 54px;
+    cursor: pointer;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.3);
+    transition: opacity 0.4s ease, scale 0.4s var(--spring);
+}
+
+.vwrap.playing .vplay { opacity: 0; scale: 0.7; }
+.vwrap.playing:hover .vplay { opacity: 0.85; scale: 1; }
+
+/* ===========================================
+   INLINE EDITING (press E)
+   =========================================== */
+.edit-toggle {
+    position: fixed;
+    left: 14px;
+    bottom: 14px;
+    z-index: 1001;
+    width: 52px;
+    height: 52px;
+    border: 0;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+    font-size: 24px;
+    cursor: pointer;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+}
+
+.edit-toggle.show, body.editing .edit-toggle { opacity: 1; pointer-events: auto; }
+body.editing [contenteditable="true"] { outline: 2px dashed rgba(23, 138, 121, 0.5); outline-offset: 4px; }
+
+</style>
+</head>
+<body>
+<div class="deck-viewport">
+<main class="deck-stage" id="deckStage" data-sec="0" data-mode="home" data-blob="home">
+  <!-- === GLOBAL LAYERS: morphing blobs + chapter tabs (they persist and morph between slides) === -->
+  <div class="bg"><div class="blob b1"></div><div class="blob b2"></div><div class="grain"></div></div>
+  <nav class="rail" id="rail" aria-label="Các phần của bài"><div class="tab" data-sec="1" style="--tc:#178a79;--tt:#ffffff" title="Khái niệm và các giai đoạn dinh dưỡng"><b>1</b><span>Khái niệm và các giai đoạn dinh dưỡng</span></div><div class="tab" data-sec="2" style="--tc:#3a9a4a;--tt:#ffffff" title="Lấy thức ăn"><b>2</b><span>Lấy thức ăn</span></div><div class="tab" data-sec="3" style="--tc:#efb02a;--tt:#2b1d00" title="Tiêu hoá thức ăn"><b>3</b><span>Tiêu hoá thức ăn</span></div><div class="tab" data-sec="4" style="--tc:#d8652a;--tt:#ffffff" title="Tiêu hoá thức ăn trong ống tiêu hoá ở người"><b>4</b><span>Tiêu hoá thức ăn trong ống tiêu hoá ở người</span></div><div class="tab" data-sec="5" style="--tc:#d63f4d;--tt:#ffffff" title="Hấp thụ chất dinh dưỡng"><b>5</b><span>Hấp thụ chất dinh dưỡng</span></div><div class="tab" data-sec="6" style="--tc:#7b5ea7;--tt:#ffffff" title="Đồng hoá và sử dụng chất dinh dưỡng"><b>6</b><span>Đồng hoá và sử dụng chất dinh dưỡng</span></div><div class="tab" data-sec="7" style="--tc:#2f6fde;--tt:#ffffff" title="Ứng dụng"><b>II</b><span>Ứng dụng</span></div></nav>
+  <div class="pageno" id="pageno"></div>
+
+<section class="slide" data-sec="0" data-mode="home" data-blob="home" >
+
+<div class="title-frame">
+  <div class="kicker rv" style="--d:.55s">BÀI 8</div>
+  <h1><span class="w" style="--d:0.65s">Hệ</span> <span class="w" style="--d:0.73s">tiêu</span> <span class="w" style="--d:0.81s">hóa</span><br><span class="w hl" style="--d:0.90s">ở</span> <span class="w hl" style="--d:0.98s">động</span> <span class="w hl" style="--d:1.06s">vật</span></h1>
+  <div class="parts">
+    <span class="part rv" style="--d:1.25s"><i style="background:#178a79"></i>I. QUÁ TRÌNH DINH DƯỠNG</span>
+    <span class="part rv" style="--d:1.35s"><i style="background:#2f6fde"></i>II. Ứng dụng</span>
+  </div>
+</div>
+<svg class="gut" viewBox="0 0 620 760" aria-hidden="true">
+  <path class="draw" pathLength="1" d="M300 20 C300 90 300 120 300 170 C300 230 220 230 210 290 C200 350 330 360 400 330 C470 300 470 250 420 240 C360 228 330 300 380 330 M210 300 C150 360 140 430 200 450 C260 470 330 430 380 450 C430 470 440 520 390 540 C330 565 240 530 190 560 C140 590 160 650 220 660 C300 672 380 640 440 660 C500 680 500 720 450 740"/>
+  <circle class="bolus" r="14"/>
+</svg>
+</section>
+<section class="slide" data-sec="1" data-mode="flood" data-blob="flood" >
+
+<div class="flood-frame">
+  <div class="big-num pop" style="--d:.35s">I.</div>
+  <h2 class="flood-title"><span class="w" style="--d:0.45s">QUÁ</span> <span class="w" style="--d:0.53s">TRÌNH</span> <span class="w" style="--d:0.61s">DINH</span> <span class="w" style="--d:0.69s">DƯỠNG</span></h2>
+  <ol class="toc"><li class="rv" style="--d:0.55s"><b>1</b>Khái niệm và các giai đoạn dinh dưỡng</li><li class="rv" style="--d:0.62s"><b>2</b>Lấy thức ăn</li><li class="rv" style="--d:0.69s"><b>3</b>Tiêu hoá thức ăn</li><li class="rv" style="--d:0.76s"><b>4</b>Tiêu hoá thức ăn trong ống tiêu hoá ở người</li><li class="rv" style="--d:0.83s"><b>5</b>Hấp thụ chất dinh dưỡng</li><li class="rv" style="--d:0.90s"><b>6</b>Đồng hoá và sử dụng chất dinh dưỡng</li></ol>
+</div>
+</section>
+<section class="slide" data-sec="1" data-mode="rail" data-blob="tr" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">I. QUÁ TRÌNH DINH DƯỠNG</div><h2><span class="w" style="--d:0.13s">1.</span> <span class="w" style="--d:0.18s">Khái</span> <span class="w" style="--d:0.23s">niệm</span> <span class="w" style="--d:0.28s">và</span> <span class="w" style="--d:0.33s">các</span> <span class="w" style="--d:0.38s">giai</span> <span class="w" style="--d:0.43s">đoạn</span> <span class="w" style="--d:0.48s">dinh</span> <span class="w" style="--d:0.53s">dưỡng</span></h2></header>
+  <div class="def card rv" style="--d:.3s"><p><b>Dinh dưỡng</b> là quá trình lấy chất dinh dưỡng cần thiết từ thức ăn và tổng hợp thành chất sống của cơ thể, bảo đảm cơ thể tồn tại và phát triển.</p></div>
+  <p class="lead rv" style="--d:.45s">Quá trình dinh dưỡng gồm 4 giai đoạn:</p>
+  <div class="stages"><div class="stage pop" style="--d:0.55s;--rot:-2deg"><div class="stage-top"><span>1</span><svg viewBox="0 0 64 64"><path d="M14 34c6 8 30 8 36 0M18 26h28" /><circle cx="24" cy="18" r="4"/><circle cx="40" cy="18" r="4"/></svg></div><p>Lấy thức ăn.</p></div><div class="stage pop" style="--d:0.67s;--rot:1.5deg"><div class="stage-top"><span>2</span><svg viewBox="0 0 64 64"><circle cx="20" cy="22" r="8"/><circle cx="44" cy="22" r="8"/><path d="M26 28l12 14M38 28L26 42"/></svg></div><p>Tiêu hoá thức ăn.</p></div><div class="stage pop" style="--d:0.79s;--rot:-1deg"><div class="stage-top"><span>3</span><svg viewBox="0 0 64 64"><path d="M32 10v34M20 32l12 12 12-12"/><path d="M12 52h40"/></svg></div><p>Hấp thụ chất dinh dưỡng.</p></div><div class="stage pop" style="--d:0.91s;--rot:2deg"><div class="stage-top"><span>4</span><svg viewBox="0 0 64 64"><circle cx="32" cy="32" r="20"/><circle cx="36" cy="30" r="7"/><path d="M18 46l-6 8M46 46l6 8"/></svg></div><p>Đồng hoá các chất.</p></div>
+    <svg class="stage-line" viewBox="0 0 1370 40" preserveAspectRatio="none" aria-hidden="true"><path class="draw" pathLength="1" d="M60 20 H1310"/></svg>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="2" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">I. QUÁ TRÌNH DINH DƯỠNG</div><h2><span class="w" style="--d:0.13s">2.</span> <span class="w" style="--d:0.18s">Lấy</span> <span class="w" style="--d:0.23s">thức</span> <span class="w" style="--d:0.28s">ăn</span></h2><p class="lead big rv" style="--d:.3s">Động vật lấy thức ăn từ môi trường theo 3 kiểu chính:</p></header>
+  <div class="center-fig"><figure class="fig pop wide" style="--d:0.45s;"><i class="tape"></i><img src="images/lay-thuc-an.png" alt="Hình 8.1. Ăn lọc ở trai (a), ăn hút ở muỗi (b) và ăn thức ăn rắn kích cỡ khác nhau ở hổ (c)"></figure></div>
+</div>
+</section>
+<section class="slide" data-sec="2" data-mode="rail" data-blob="br" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">I. QUÁ TRÌNH DINH DƯỠNG</div><h2><span class="w" style="--d:0.13s">2.</span> <span class="w" style="--d:0.18s">Lấy</span> <span class="w" style="--d:0.23s">thức</span> <span class="w" style="--d:0.28s">ăn</span></h2></header>
+  <div class="kinds"><article class="kind card flip" style="--d:0.30s"><div class="kind-hd"><span>a</span><h3>a. Ăn lọc</h3></div><ul class="bl"><li class="rv" style="--d:0.55s">Lọc nước qua bộ phận chuyên hoá để lấy thức ăn.</li><li class="rv" style="--d:0.62s">Thức ăn thường là các sinh vật nhỏ hoặc các hạt hữu cơ trong nước.</li><li class="rv" style="--d:0.69s">Ví dụ: trai, sò.</li></ul></article><article class="kind card flip" style="--d:0.45s"><div class="kind-hd"><span>b</span><h3>b. Ăn hút</h3></div><ul class="bl"><li class="rv" style="--d:0.70s">Lấy thức ăn bằng cách hút dịch lỏng từ cơ thể động vật hoặc thực vật.</li><li class="rv" style="--d:0.77s">Cơ quan lấy thức ăn có cấu tạo phù hợp với việc chọc, hút dịch.</li><li class="rv" style="--d:0.84s">Ví dụ: muỗi cái dùng vòi chích lỗ, hút máu người và động vật.</li></ul></article><article class="kind card flip" style="--d:0.60s"><div class="kind-hd"><span>c</span><h3>c. Ăn thức ăn rắn kích cỡ khác nhau</h3></div><ul class="bl"><li class="rv" style="--d:0.85s">Động vật sử dụng nhiều cách để lấy thức ăn như cắn, xé, nhai hoặc nuốt.</li><li class="rv" style="--d:0.92s">Ví dụ: voi dùng vòi đưa thức ăn vào miệng; hổ cắn chết con mồi, dùng răng cắt thịt rồi nuốt.</li></ul></article></div>
+</div>
+</section>
+<section class="slide" data-sec="3" data-mode="rail" data-blob="tr" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">I. QUÁ TRÌNH DINH DƯỠNG</div><h2><span class="w" style="--d:0.13s">3.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">thức</span> <span class="w" style="--d:0.33s">ăn</span></h2></header>
+  <div class="concept">
+    <div class="tag rv" style="--d:.3s">a. Khái niệm</div>
+    <p class="statement rv" style="--d:.4s"><b>Tiêu hoá</b> là quá trình biến đổi thức ăn chứa các chất dinh dưỡng có cấu tạo phức tạp thành các phân tử nhỏ, đơn giản mà cơ thể có thể hấp thụ được.</p>
+    <svg class="chain" viewBox="0 0 800 180" aria-hidden="true"><g><line class="link" x1="80" y1="90" x2="172" y2="90" style="--i:0"/><line class="link" x1="172" y1="90" x2="264" y2="90" style="--i:1"/><line class="link" x1="264" y1="90" x2="356" y2="90" style="--i:2"/><line class="link" x1="356" y1="90" x2="448" y2="90" style="--i:3"/><line class="link" x1="448" y1="90" x2="540" y2="90" style="--i:4"/><line class="link" x1="540" y1="90" x2="632" y2="90" style="--i:5"/><line class="link" x1="632" y1="90" x2="724" y2="90" style="--i:6"/></g><g><circle class="bead" cx="80" cy="90" r="30" style="--i:0"/><circle class="bead" cx="172" cy="90" r="30" style="--i:1"/><circle class="bead" cx="264" cy="90" r="30" style="--i:2"/><circle class="bead" cx="356" cy="90" r="30" style="--i:3"/><circle class="bead" cx="448" cy="90" r="30" style="--i:4"/><circle class="bead" cx="540" cy="90" r="30" style="--i:5"/><circle class="bead" cx="632" cy="90" r="30" style="--i:6"/><circle class="bead" cx="724" cy="90" r="30" style="--i:7"/></g></svg>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="3" data-mode="rail" data-blob="br" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">3. Tiêu hoá thức ăn</div><h2><span class="w" style="--d:0.13s">b.</span> <span class="w" style="--d:0.18s">Các</span> <span class="w" style="--d:0.23s">hình</span> <span class="w" style="--d:0.28s">thức</span> <span class="w" style="--d:0.33s">tiêu</span> <span class="w" style="--d:0.38s">hoá</span></h2></header>
+  <div class="split">
+    <article class="card form-card rv" style="--d:.3s"><h3 class="pill">Tiêu hoá nội bào</h3>
+      <ul class="bl"><li class="rv" style="--d:0.45s">Diễn ra bên trong tế bào.</li><li class="rv" style="--d:0.53s">Thức ăn được tế bào thu nhận, sau đó enzyme của lysosome phân giải thành các chất dinh dưỡng đơn giản.</li><li class="rv" style="--d:0.61s">Ví dụ: động vật chưa có cơ quan tiêu hoá như bọt biển; thức ăn được tế bào bắt và tiêu hoá nội bào.</li></ul>
+    </article>
+    <figure class="fig pop side" style="--d:0.50s;"><i class="tape"></i><img src="images/trung-giay-noi-bao.png" alt="Tiêu hóa nội bào ở trùng giày"><figcaption>Tiêu hóa nội bào ở trùng giày</figcaption></figure>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="3" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">3. Tiêu hoá thức ăn</div><h2><span class="w" style="--d:0.13s">b.</span> <span class="w" style="--d:0.18s">Các</span> <span class="w" style="--d:0.23s">hình</span> <span class="w" style="--d:0.28s">thức</span> <span class="w" style="--d:0.33s">tiêu</span> <span class="w" style="--d:0.38s">hoá</span></h2></header>
+  <div class="split rev">
+    <figure class="fig pop side wide-side" style="--d:0.50s;"><i class="tape"></i><img src="images/thuy-tuc.png" alt="Hình: Tiêu hóa ở thủy tức"></figure>
+    <article class="card form-card rv" style="--d:.3s"><h3 class="pill">Tiêu hoá ngoại bào</h3>
+      <ul class="bl"><li class="rv" style="--d:0.45s">Diễn ra bên ngoài tế bào.</li><li class="rv" style="--d:0.53s">Thức ăn được phân giải nhờ enzyme tiêu hoá; trong ống tiêu hoá còn có sự hỗ trợ của hoạt động cơ học.</li><li class="rv" style="--d:0.61s">Ví dụ: thuỷ tức tiêu hoá thức ăn trong túi tiêu hoá; người tiêu hoá thức ăn trong ống tiêu hoá.</li></ul>
+    </article>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="3" data-mode="rail" data-blob="tr" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">3. Tiêu hoá thức ăn</div><h2><span class="w" style="--d:0.13s">c.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">ở</span> <span class="w" style="--d:0.33s">các</span> <span class="w" style="--d:0.38s">nhóm</span> <span class="w" style="--d:0.43s">động</span> <span class="w" style="--d:0.48s">vật</span></h2></header>
+  <table class="tbl rv" style="--d:.3s"><thead><tr><th>Nhóm động vật</th><th>Đặc điểm tiêu hoá</th><th>Ví dụ</th></tr></thead><tbody><tr class="rv" style="--d:0.40s"><td><div class="first"><span class="ico"><svg viewBox="0 0 80 80"><circle cx="40" cy="40" r="28"/><circle cx="46" cy="36" r="9" class="fill"/></svg></span><span>Chưa có cơ quan tiêu hoá</span></div></td><td>Tiêu hoá nội bào</td><td>Bọt biển</td></tr><tr class="rv" style="--d:0.52s"><td><div class="first"><span class="ico"><svg viewBox="0 0 80 80"><path d="M26 14 C10 30 10 66 40 68 C70 66 70 30 54 14"/><circle cx="40" cy="50" r="6" class="fill"/></svg></span><span>Có túi tiêu hoá</span></div></td><td>Tiêu hoá ngoại bào kết hợp nội bào</td><td>Thuỷ tức</td></tr><tr class="rv" style="--d:0.64s"><td><div class="first"><span class="ico"><svg viewBox="0 0 80 80"><path d="M12 18 C40 18 40 40 40 40 S40 62 68 62"/><circle cx="40" cy="40" r="6" class="fill"/></svg></span><span>Có ống tiêu hoá</span></div></td><td>Tiêu hoá ngoại bào</td><td>Người, nhiều động vật không xương sống và có xương sống</td></tr></tbody></table>
+</div>
+</section>
+<section class="slide" data-sec="3" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">3. Tiêu hoá thức ăn</div><h2><span class="w" style="--d:0.13s">c.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">ở</span> <span class="w" style="--d:0.33s">các</span> <span class="w" style="--d:0.38s">nhóm</span> <span class="w" style="--d:0.43s">động</span> <span class="w" style="--d:0.48s">vật</span></h2></header>
+  <div class="duo">
+    <article class="card duo-card flip" style="--d:.3s">
+      <svg class="anim-fig" viewBox="0 0 320 170" aria-hidden="true"><path class="organ" d="M120 18 C60 50 60 150 160 152 C260 150 260 50 200 18"/><circle class="food sac-food" r="11"/></svg>
+      <h3>Tiêu hoá trong túi tiêu hoá:</h3>
+      <ul class="bl"><li class="rv" style="--d:0.50s">Thức ăn đi vào túi qua miệng.</li><li class="rv" style="--d:0.58s">Enzyme được tiết vào túi để phân giải thức ăn thành những mảnh nhỏ.</li><li class="rv" style="--d:0.66s">Các tế bào thành túi tiếp tục thu nhận và tiêu hoá nội bào.</li><li class="rv" style="--d:0.74s">Chất thải được đưa ra ngoài qua miệng.</li></ul>
+    </article>
+    <article class="card duo-card flip" style="--d:.45s">
+      <svg class="anim-fig" viewBox="0 0 320 170" aria-hidden="true"><path class="organ" d="M20 40 C120 40 110 90 160 90 C210 90 200 140 300 140"/><circle class="food tube-food" r="11"/></svg>
+      <h3>Tiêu hoá trong ống tiêu hoá:</h3>
+      <ul class="bl"><li class="rv" style="--d:0.65s">Thức ăn di chuyển theo một chiều qua các cơ quan của ống tiêu hoá.</li><li class="rv" style="--d:0.73s">Thức ăn được biến đổi bằng tiêu hoá cơ học và hoá học.</li><li class="rv" style="--d:0.81s">Chất dinh dưỡng được hấp thụ; phần còn lại được thải ra ngoài qua hậu môn.</li></ul>
+    </article>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="4" data-mode="rail" data-blob="br" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">I. QUÁ TRÌNH DINH DƯỠNG</div><h2><span class="w" style="--d:0.13s">4.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">thức</span> <span class="w" style="--d:0.33s">ăn</span> <span class="w" style="--d:0.38s">trong</span> <span class="w" style="--d:0.43s">ống</span> <span class="w" style="--d:0.48s">tiêu</span> <span class="w" style="--d:0.53s">hoá</span> <span class="w" style="--d:0.58s">ở</span> <span class="w" style="--d:0.63s">người</span></h2></header>
+  <div class="split intro4">
+    <div class="col">
+      <p class="lead rv" style="--d:.35s">Ở người, ống tiêu hoá kết hợp với gan, tuỵ và các tuyến nước bọt tạo thành hệ tiêu hoá.</p>
+      <p class="lead rv" style="--d:.45s">Quá trình tiêu hoá được điều khiển bởi hệ thần kinh và hormone.</p>
+      <ol class="journey"><li class="rv" style="--d:0.65s"><span></span>a. Tiêu hoá ở khoang miệng</li><li class="rv" style="--d:0.75s"><span></span>b. Tiêu hoá ở dạ dày</li><li class="rv" style="--d:0.85s"><span></span>c. Tiêu hoá ở ruột non</li><li class="rv" style="--d:0.95s"><span></span>d. Tiêu hoá ở ruột già</li></ol>
+    </div>
+    <figure class="fig pop tall" style="--d:0.40s;"><i class="tape"></i><img src="images/ong-tieu-hoa-tuyen.png" alt="Hình 8.3. Ống tiêu hoá và các tuyến tiết dịch tiêu hoá ở người"></figure>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="4" data-mode="rail" data-blob="tr" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">4. Tiêu hoá thức ăn trong ống tiêu hoá ở người</div><h2><span class="w" style="--d:0.13s">a.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">ở</span> <span class="w" style="--d:0.33s">khoang</span> <span class="w" style="--d:0.38s">miệng</span></h2><div class="track rv" style="--d:.2s"><span class="on"><i></i>Khoang miệng</span><span class=""><i></i>Dạ dày</span><span class=""><i></i>Ruột non</span><span class=""><i></i>Ruột già</span></div></header>
+  <div class="mechs">
+    <article class="card mech  rv" style="--d:0.35s"><h3 class="pill">Tiêu hoá cơ học</h3><ul class="bl"><li class="rv" style="--d:0.50s">Răng cắt, nghiền nhỏ thức ăn.</li><li class="rv" style="--d:0.58s">Lưỡi đảo trộn thức ăn với nước bọt và tạo viên thức ăn.</li><li class="rv" style="--d:0.66s">Phản xạ nuốt đưa thức ăn xuống thực quản.</li></ul></article>
+    <article class="card mech  rv" style="--d:0.50s"><h3 class="pill">Tiêu hoá hoá học</h3><ul class="bl"><li class="rv" style="--d:0.65s">Enzyme amylase trong nước bọt thuỷ phân tinh bột thành maltose.</li></ul></article>
+  </div>
+  <p class="strip rv" style="--d:.8s"><b>Vận chuyển:</b> Thực quản co bóp theo kiểu nhu động, đẩy thức ăn xuống dạ dày.</p>
+</div>
+</section>
+<section class="slide" data-sec="4" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">4. Tiêu hoá thức ăn trong ống tiêu hoá ở người</div><h2><span class="w" style="--d:0.13s">b.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">ở</span> <span class="w" style="--d:0.33s">dạ</span> <span class="w" style="--d:0.38s">dày</span></h2><div class="track rv" style="--d:.2s"><span class="past"><i></i>Khoang miệng</span><span class="on"><i></i>Dạ dày</span><span class=""><i></i>Ruột non</span><span class=""><i></i>Ruột già</span></div></header>
+  <div class="split stomach">
+    <div class="col">
+      <article class="card mech  rv" style="--d:0.35s"><h3 class="pill">Tiêu hoá cơ học</h3><ul class="bl"><li class="rv" style="--d:0.50s">Dạ dày co bóp, làm nhỏ và trộn thức ăn với dịch vị.</li><li class="rv" style="--d:0.58s">Nhu động dạ dày đẩy thức ăn qua môn vị vào ruột non.</li></ul></article>
+      <article class="card mech  rv" style="--d:0.50s"><h3 class="pill">Tiêu hoá hoá học</h3><ul class="bl"><li class="rv" style="--d:0.65s">Pepsin phân giải protein thành các peptide.</li><li class="rv" style="--d:0.73s">HCl tạo môi trường acid, hỗ trợ hoạt động của pepsin và giúp hạn chế nhiều vi sinh vật có hại.</li></ul></article>
+    </div>
+    <figure class="fig pop side" style="--d:0.45s;"><i class="tape"></i><img src="images/ong-tieu-hoa-nguoi.png" alt="Ống tiêu hoá ở người"></figure>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="4" data-mode="rail" data-blob="br" >
+
+<div class="frame">
+  <svg class="villi" viewBox="0 0 1370 120" preserveAspectRatio="none" aria-hidden="true"><path d="M0 120 C0 40 50 40 50 120 M70 120 C70 40 120 40 120 120 M140 120 C140 40 190 40 190 120 M210 120 C210 40 260 40 260 120 M280 120 C280 40 330 40 330 120 M350 120 C350 40 400 40 400 120 M420 120 C420 40 470 40 470 120 M490 120 C490 40 540 40 540 120 M560 120 C560 40 610 40 610 120 M630 120 C630 40 680 40 680 120 M700 120 C700 40 750 40 750 120 M770 120 C770 40 820 40 820 120 M840 120 C840 40 890 40 890 120 M910 120 C910 40 960 40 960 120 M980 120 C980 40 1030 40 1030 120 M1050 120 C1050 40 1100 40 1100 120 M1120 120 C1120 40 1170 40 1170 120 M1190 120 C1190 40 1240 40 1240 120 M1260 120 C1260 40 1310 40 1310 120 M1330 120 C1330 40 1380 40 1380 120 "/></svg>
+  <header class="hd"><div class="kick rv" style="--d:0.05s">4. Tiêu hoá thức ăn trong ống tiêu hoá ở người</div><h2><span class="w" style="--d:0.13s">c.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">ở</span> <span class="w" style="--d:0.33s">ruột</span> <span class="w" style="--d:0.38s">non</span></h2><div class="track rv" style="--d:.2s"><span class="past"><i></i>Khoang miệng</span><span class="past"><i></i>Dạ dày</span><span class="on"><i></i>Ruột non</span><span class=""><i></i>Ruột già</span></div></header>
+  <div class="mechs">
+    <article class="card mech  rv" style="--d:0.35s"><h3 class="pill">Tiêu hoá cơ học</h3><ul class="bl"><li class="rv" style="--d:0.50s">Các cơ ruột co thắt từng đoạn và tạo nhu động, giúp nhào trộn thức ăn với dịch tiêu hoá.</li><li class="rv" style="--d:0.58s">Nhu động đẩy thức ăn dọc theo ruột non về phía ruột già.</li></ul></article>
+    <article class="card mech  rv" style="--d:0.50s"><h3 class="pill">Tiêu hoá hoá học</h3><ul class="bl"><li class="rv" style="--d:0.65s">Dịch tụy và dịch ruột chứa enzyme phân giải các chất dinh dưỡng.</li><li class="rv" style="--d:0.73s">Dịch mật do gan sản xuất giúp chia giọt mỡ lớn thành các giọt mỡ nhỏ, làm tăng diện tích tiếp xúc của lipid với enzyme lipase.</li></ul></article>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="4" data-mode="rail" data-blob="tr" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">4. Tiêu hoá thức ăn trong ống tiêu hoá ở người</div><h2><span class="w" style="--d:0.13s">c.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">ở</span> <span class="w" style="--d:0.33s">ruột</span> <span class="w" style="--d:0.38s">non</span></h2></header>
+  <table class="tbl compact rv" style="--d:.3s"><thead><tr><th>Chất</th><th>Enzyme hoặc dịch tham gia</th><th>Sản phẩm</th></tr></thead><tbody><tr class="rv" style="--d:0.40s"><td>Carbohydrate</td><td>Amylase, maltase, lactase, sucrase</td><td><span class="arrow">→</span>Đường đơn</td></tr><tr class="rv" style="--d:0.50s"><td>Protein, peptide</td><td>Trypsin, chymotrypsin, peptidase, dipeptidase</td><td><span class="arrow">→</span>Amino acid</td></tr><tr class="rv" style="--d:0.60s"><td>Lipid</td><td>Dịch mật hỗ trợ nhũ tương hoá; lipase thuỷ phân</td><td><span class="arrow">→</span>Glycerol, acid béo, monoglyceride</td></tr></tbody></table>
+  <div class="split note-row">
+    <p class="note rv" style="--d:.75s"><b>Lưu ý:</b> Dịch mật không trực tiếp phân giải lipid bằng enzyme mà hỗ trợ quá trình tiêu hoá lipid.</p>
+    <figure class="fig pop bile" style="--d:0.85s;"><i class="tape"></i><img src="images/dich-mat-lipase.png" alt="Hình 8.4. Tác dụng của dịch mật và lipase"></figure>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="4" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">4. Tiêu hoá thức ăn trong ống tiêu hoá ở người</div><h2><span class="w" style="--d:0.13s">d.</span> <span class="w" style="--d:0.18s">Tiêu</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">ở</span> <span class="w" style="--d:0.33s">ruột</span> <span class="w" style="--d:0.38s">già</span></h2><div class="track rv" style="--d:.2s"><span class="past"><i></i>Khoang miệng</span><span class="past"><i></i>Dạ dày</span><span class="past"><i></i>Ruột non</span><span class="on"><i></i>Ruột già</span></div></header>
+  <div class="split colon">
+    <article class="card rv" style="--d:.35s"><ul class="bl"><li class="rv" style="--d:0.50s">Phần thức ăn còn lại hầu như không còn nhiều chất dinh dưỡng được hấp thụ sẽ đi vào ruột già.</li><li class="rv" style="--d:0.62s">Nhu động ruột già đẩy phân về phía trực tràng.</li><li class="rv" style="--d:0.74s">Phân được thải ra ngoài qua hậu môn.</li></ul></article>
+    <svg class="colon-fig" viewBox="0 0 460 420" aria-hidden="true">
+      <path id="colonPath" class="organ thick" d="M70 400 V90 C70 50 100 40 140 40 H320 C360 40 390 50 390 90 V300 C390 340 360 350 320 350 H250 V400"/>
+      <circle class="food colon-food" r="16"/><circle class="food colon-food f2" r="12"/><circle class="food colon-food f3" r="10"/>
+    </svg>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="5" data-mode="rail" data-blob="br" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">I. QUÁ TRÌNH DINH DƯỠNG</div><h2><span class="w" style="--d:0.13s">5.</span> <span class="w" style="--d:0.18s">Hấp</span> <span class="w" style="--d:0.23s">thụ</span> <span class="w" style="--d:0.28s">chất</span> <span class="w" style="--d:0.33s">dinh</span> <span class="w" style="--d:0.38s">dưỡng</span></h2></header>
+  <div class="split absorb">
+    <div class="col">
+      <article class="card rv" style="--d:.3s"><h3 class="pill">a. Khái niệm</h3><p class="txt">Hấp thụ là quá trình các chất dinh dưỡng đi từ cơ quan tiêu hoá vào hệ tuần hoàn máu và hệ tuần hoàn bạch huyết.</p></article>
+      <article class="card rv" style="--d:.45s"><h3 class="pill">b. Nơi hấp thụ chủ yếu</h3><ul class="bl"><li class="rv" style="--d:0.60s">Hấp thụ chất dinh dưỡng chủ yếu diễn ra ở ruột non.</li><li class="rv" style="--d:0.68s">Thành ruột non có nhiều nếp gấp, lông ruột và vi nhung mao, làm tăng diện tích hấp thụ.</li><li class="rv" style="--d:0.76s">Theo SGK, diện tích hấp thụ của ruột non có thể đạt khoảng 250–300 m².</li></ul></article>
+    </div>
+    <div class="col">
+      <figure class="fig pop side" style="--d:0.50s;"><i class="tape"></i><img src="images/ruot-non-long-ruot.png" alt="Hình 8.5. Cấu tạo của ruột non, lông ruột và tế bào niêm mạc ruột"></figure>
+      <div class="stat pop" style="--d:.9s"><b>250–300 m²</b></div>
+    </div>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="5" data-mode="rail" data-blob="tr" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">5. Hấp thụ chất dinh dưỡng</div><h2><span class="w" style="--d:0.13s">c.</span> <span class="w" style="--d:0.18s">Các</span> <span class="w" style="--d:0.23s">chất</span> <span class="w" style="--d:0.28s">được</span> <span class="w" style="--d:0.33s">hấp</span> <span class="w" style="--d:0.38s">thụ</span></h2></header>
+  <ul class="mols"><li class="mol rise" style="--d:0.35s"><i></i>Amino acid.</li><li class="mol rise" style="--d:0.44s"><i></i>Đường đơn: glucose, galactose, fructose.</li><li class="mol rise" style="--d:0.53s"><i></i>Acid béo, glycerol, monoglyceride và cholesterol.</li><li class="mol rise" style="--d:0.62s"><i></i>Vitamin A, D, E, K, B, C,...</li><li class="mol rise" style="--d:0.71s"><i></i>Khoáng chất: Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, HCO₃⁻,...</li><li class="mol rise" style="--d:0.80s"><i></i>Nước.</li></ul>
+  <p class="strip rv" style="--d:.95s">Các chất dinh dưỡng đơn giản được hấp thụ theo hai phương thức: <b>vận chuyển chủ động</b> và <b>vận chuyển thụ động</b>.</p>
+</div>
+</section>
+<section class="slide" data-sec="6" data-mode="rail" data-blob="bl" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:0.05s">I. QUÁ TRÌNH DINH DƯỠNG</div><h2><span class="w" style="--d:0.13s">6.</span> <span class="w" style="--d:0.18s">Đồng</span> <span class="w" style="--d:0.23s">hoá</span> <span class="w" style="--d:0.28s">và</span> <span class="w" style="--d:0.33s">sử</span> <span class="w" style="--d:0.38s">dụng</span> <span class="w" style="--d:0.43s">chất</span> <span class="w" style="--d:0.48s">dinh</span> <span class="w" style="--d:0.53s">dưỡng</span></h2></header>
+  <p class="lead rv" style="--d:.3s">Sau khi hấp thụ, chất dinh dưỡng được hệ tuần hoàn vận chuyển đến các tế bào và được sử dụng để:</p>
+  <div class="assim">
+    <svg class="cell-big pop" style="--d:.4s;--rot:0deg" viewBox="0 0 300 300" aria-hidden="true">
+      <circle class="membrane" cx="150" cy="150" r="128"/><circle class="nucleus" cx="165" cy="140" r="46"/>
+      <circle class="org" cx="95" cy="110" r="14"/><circle class="org" cx="100" cy="200" r="18"/><circle class="org" cx="200" cy="215" r="12"/><circle class="org" cx="220" cy="90" r="10"/>
+    </svg>
+    <ol class="uses"><li class="use pop" style="--d:0.55s;--rot:0deg"><b>1</b>Tổng hợp các chất sống, tạo tế bào mới.</li><li class="use pop" style="--d:0.65s;--rot:0deg"><b>2</b>Đổi mới các thành phần tế bào.</li><li class="use pop" style="--d:0.75s;--rot:0deg"><b>3</b>Sửa chữa tế bào bị hư hỏng.</li><li class="use pop" style="--d:0.85s;--rot:0deg"><b>4</b>Dự trữ năng lượng.</li><li class="use pop" style="--d:0.95s;--rot:0deg"><b>5</b>Cung cấp năng lượng cho các hoạt động sống.</li></ol>
+  </div>
+</div>
+</section>
+<section class="slide" data-sec="7" data-mode="flood" data-blob="flood" >
+
+<div class="flood-frame">
+  <div class="big-num pop" style="--d:.35s">II.</div>
+  <h2 class="flood-title"><span class="w" style="--d:0.45s">Ứng</span> <span class="w" style="--d:0.53s">dụng</span></h2>
+  <ol class="toc toc-1"><li class="rv" style="--d:0.60s">1. Xây dựng chế độ ăn uống khoa học</li><li class="rv" style="--d:0.68s">2. Vai trò của việc sử dụng thực phẩm sạch trong đời sống</li><li class="rv" style="--d:0.76s">3. Các bệnh về tiêu hoá và cách phòng tránh</li></ol>
+</div>
+</section>
+<section class="slide" data-sec="7" data-mode="rail" data-blob="video" >
+
+<div class="frame">
+  <header class="hd"><div class="kick rv" style="--d:.05s">II. Ứng dụng</div></header>
+  <div class="vwrap pop" style="--d:.25s;--rot:0deg">
+    <video id="appVideo" src="video/ung-dung.mp4" poster="video/poster.jpg" playsinline preload="metadata"></video>
+    <button class="vplay" type="button" aria-label="Phát / tạm dừng video">▶</button>
+  </div>
+</div>
+</section>
+
+</main>
+</div>
+<button class="edit-toggle" id="editToggle" title="Chế độ sửa chữ (E)">✏️</button>
+<script>
+/* ===========================================
+   DECK CONTROLLER
+   Arrows / Space / PageUp-Down / Home / End / wheel / swipe,
+   F = fullscreen, E = edit text, Ctrl+S = save edited copy.
+   Each slide declares data-sec (chapter), data-mode
+   (home | flood | rail) and data-blob (background layout);
+   the stage copies them so the rail and blobs morph.
+   =========================================== */
+class Deck {
+    constructor() {
+        this.stage = document.getElementById('deckStage');
+        this.slides = [...this.stage.querySelectorAll('.slide')];
+        this.tabs = [...document.querySelectorAll('#rail .tab')];
+        this.pageno = document.getElementById('pageno');
+        this.current = 0;
+        this.wheelLock = false;
+        this.setupScale();
+        this.setupKeys();
+        this.setupWheelAndTouch();
+        this.setupTabs();
+        this.setupVideo();
+        this.setupEditing();
+        // Two frames so the first slide's entry animation actually plays
+        requestAnimationFrame(() => requestAnimationFrame(() => this.show(0)));
+    }
+
+    setupScale() {
+        const fit = () => {
+            const f = Math.min(innerWidth / 1920, innerHeight / 1080);
+            this.stage.style.transform = `translate(${(innerWidth - 1920 * f) / 2}px, ${(innerHeight - 1080 * f) / 2}px) scale(${f})`;
+        };
+        fit();
+        addEventListener('resize', fit);
+    }
+
+    setupKeys() {
+        document.addEventListener('keydown', (e) => {
+            if (document.body.classList.contains('editing')) {
+                if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this.saveCopy(); }
+                if (e.key === 'Escape') this.toggleEditing();
+                return;
+            }
+            if (['ArrowRight', 'ArrowDown', 'PageDown', ' '].includes(e.key)) { e.preventDefault(); this.show(this.current + 1); }
+            else if (['ArrowLeft', 'ArrowUp', 'PageUp'].includes(e.key)) { e.preventDefault(); this.show(this.current - 1); }
+            else if (e.key === 'Home') this.show(0);
+            else if (e.key === 'End') this.show(this.slides.length - 1);
+            else if (e.key === 'f' || e.key === 'F') document.fullscreenElement ? document.exitFullscreen() : document.documentElement.requestFullscreen();
+            else if (e.key === 'e' || e.key === 'E') this.toggleEditing();
+        });
+    }
+
+    setupWheelAndTouch() {
+        addEventListener('wheel', (e) => {
+            if (this.wheelLock || Math.abs(e.deltaY) < 30 || document.body.classList.contains('editing')) return;
+            this.wheelLock = true;
+            this.show(this.current + (e.deltaY > 0 ? 1 : -1));
+            setTimeout(() => { this.wheelLock = false; }, 900);
+        }, { passive: true });
+        let x0 = 0;
+        addEventListener('touchstart', (e) => { x0 = e.touches[0].clientX; }, { passive: true });
+        addEventListener('touchend', (e) => {
+            const dx = e.changedTouches[0].clientX - x0;
+            if (Math.abs(dx) > 50) this.show(this.current + (dx < 0 ? 1 : -1));
+        });
+    }
+
+    // Clicking a chapter tab jumps to the first slide of that chapter
+    setupTabs() {
+        this.tabs.forEach((tab) => tab.addEventListener('click', () => {
+            const i = this.slides.findIndex((s) => s.dataset.sec === tab.dataset.sec);
+            if (i >= 0) this.show(i);
+        }));
+    }
+
+    setupVideo() {
+        this.stage.querySelectorAll('.vwrap').forEach((wrap) => {
+            const video = wrap.querySelector('video');
+            video.muted = true;
+            const toggle = () => (video.paused ? video.play() : video.pause());
+            wrap.querySelector('.vplay').addEventListener('click', toggle);
+            video.addEventListener('click', toggle);
+            video.addEventListener('play', () => wrap.classList.add('playing'));
+            video.addEventListener('pause', () => wrap.classList.remove('playing'));
+        });
+    }
+
+    show(index) {
+        this.current = Math.max(0, Math.min(index, this.slides.length - 1));
+        const slide = this.slides[this.current];
+        this.slides.forEach((s, i) => {
+            s.classList.toggle('active', i === this.current);
+            s.classList.toggle('visible', i === this.current);
+        });
+        const { sec, mode, blob } = slide.dataset;
+        Object.assign(this.stage.dataset, { sec, mode, blob });
+        this.layoutRail(mode, Number(sec));
+        this.pageno.textContent = `${String(this.current + 1).padStart(2, '0')} / ${this.slides.length}`;
+        this.stage.querySelectorAll('video').forEach((v) => {
+            if (slide.contains(v)) v.play().catch(() => {});
+            else v.pause();
+        });
+    }
+
+    // Tab geometry per mode. Each tab overlaps the next by R so its rounded
+    // edge shows; --cx centres the number/label inside the visible strip.
+    layoutRail(mode, sec) {
+        const R = 30;
+        let x = 0;
+        this.tabs.forEach((tab, k) => {
+            const n = k + 1;
+            const isOn = mode === 'rail' && n === sec;
+            const w = mode === 'home' ? 92 : isOn ? 150 : 34;
+            let left = x - R;
+            let width = w + 2 * R;
+            let z = 20 - k;
+            if (mode === 'flood' && n === sec) { left = -R; width = 1920 + 2 * R; z = 30; }
+            tab.style.left = `${left}px`;
+            tab.style.width = `${width}px`;
+            tab.style.zIndex = z;
+            tab.style.setProperty('--cx', `${k === 0 ? R + (w + R) / 2 : 2 * R + w / 2}px`);
+            tab.classList.toggle('show-label', mode === 'home' || isOn);
+            tab.classList.toggle('mini', mode !== 'home' && !isOn);
+            tab.classList.toggle('flooded', mode === 'flood' && n === sec);
+            x += w;
+        });
+    }
+
+    /* --- Inline editing: E toggles, Ctrl+S downloads the edited deck --- */
+    setupEditing() {
+        const btn = document.getElementById('editToggle');
+        btn.addEventListener('click', () => this.toggleEditing());
+        let hide = null;
+        addEventListener('mousemove', (e) => {
+            if (e.clientX < 90 && e.clientY > innerHeight - 90) {
+                clearTimeout(hide);
+                btn.classList.add('show');
+            } else if (btn.classList.contains('show')) {
+                clearTimeout(hide);
+                hide = setTimeout(() => btn.classList.remove('show'), 400);
+            }
+        });
+    }
+
+    toggleEditing() {
+        const on = document.body.classList.toggle('editing');
+        this.stage.querySelectorAll('h1, h2, h3, p, li, td, th, figcaption, .kick, .part, .kicker')
+            .forEach((el) => (on ? el.setAttribute('contenteditable', 'true') : el.removeAttribute('contenteditable')));
+    }
+
+    saveCopy() {
+        this.toggleEditing();
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+        this.toggleEditing();
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(new Blob([html], { type: 'text/html' }));
+        a.download = 'index.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+    }
+}
+
+window.deck = new Deck();
+
+</script>
+</body>
+</html>

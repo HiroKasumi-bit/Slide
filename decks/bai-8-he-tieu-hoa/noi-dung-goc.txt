@@ -1,0 +1,185 @@
+﻿ư
+Dưới đây là bản tóm tắt chi tiết, đầy đủ theo từng phần của SGK, giữ lại các khái niệm, cơ chế, ví dụ và kiến thức trọng tâm để học bài và ôn kiểm tra.
+I. QUÁ TRÌNH DINH DƯỠNG
+1. Khái niệm và các giai đoạn dinh dưỡng
+* Dinh dưỡng là quá trình lấy chất dinh dưỡng cần thiết từ thức ăn và tổng hợp thành chất sống của cơ thể, bảo đảm cơ thể tồn tại và phát triển.
+* Quá trình dinh dưỡng gồm 4 giai đoạn:
+   1. Lấy thức ăn.
+   2. Tiêu hoá thức ăn.
+   3. Hấp thụ chất dinh dưỡng.
+   4. Đồng hoá các chất.
+2. Lấy thức ăn
+Động vật lấy thức ăn từ môi trường theo 3 kiểu chính:
+
+
+a. Ăn lọc
+* Lọc nước qua bộ phận chuyên hoá để lấy thức ăn.
+* Thức ăn thường là các sinh vật nhỏ hoặc các hạt hữu cơ trong nước.
+* Ví dụ: trai, sò.
+
+
+
+
+
+
+b. Ăn hút
+* Lấy thức ăn bằng cách hút dịch lỏng từ cơ thể động vật hoặc thực vật.
+* Cơ quan lấy thức ăn có cấu tạo phù hợp với việc chọc, hút dịch.
+* Ví dụ: muỗi cái dùng vòi chích lỗ, hút máu người và động vật.
+
+
+c. Ăn thức ăn rắn kích cỡ khác nhau
+* Động vật sử dụng nhiều cách để lấy thức ăn như cắn, xé, nhai hoặc nuốt.
+* Ví dụ: voi dùng vòi đưa thức ăn vào miệng; hổ cắn chết con mồi, dùng răng cắt thịt rồi nuốt.  
+3. Tiêu hoá thức ăn
+a. Khái niệm
+Tiêu hoá là quá trình biến đổi thức ăn chứa các chất dinh dưỡng có cấu tạo phức tạp thành các phân tử nhỏ, đơn giản mà cơ thể có thể hấp thụ được.
+b. Các hình thức tiêu hoá
+Tiêu hoá nội bào
+   * Diễn ra bên trong tế bào.
+   * Thức ăn được tế bào thu nhận, sau đó enzyme của lysosome phân giải thành các chất dinh dưỡng đơn giản.
+   * Ví dụ: động vật chưa có cơ quan tiêu hoá như bọt biển; thức ăn được tế bào bắt và tiêu hoá nội bào.
+  
+
+Tiêu hóa nội bào ở trùng giày
+
+
+Tiêu hoá ngoại bào
+   * Diễn ra bên ngoài tế bào.
+   * Thức ăn được phân giải nhờ enzyme tiêu hoá; trong ống tiêu hoá còn có sự hỗ trợ của hoạt động cơ học.
+   * Ví dụ: thuỷ tức tiêu hoá thức ăn trong túi tiêu hoá; người tiêu hoá thức ăn trong ống tiêu hoá.
+
+
+  
+
+c. Tiêu hoá ở các nhóm động vật
+Nhóm động vật
+	Đặc điểm tiêu hoá
+	Ví dụ
+	Chưa có cơ quan tiêu hoá
+	Tiêu hoá nội bào
+	Bọt biển
+	Có túi tiêu hoá
+	Tiêu hoá ngoại bào kết hợp nội bào
+	Thuỷ tức
+	Có ống tiêu hoá
+	Tiêu hoá ngoại bào
+	Người, nhiều động vật không xương sống và có xương sống
+	Tiêu hoá trong túi tiêu hoá:
+   * Thức ăn đi vào túi qua miệng.
+   * Enzyme được tiết vào túi để phân giải thức ăn thành những mảnh nhỏ.
+   * Các tế bào thành túi tiếp tục thu nhận và tiêu hoá nội bào.
+   * Chất thải được đưa ra ngoài qua miệng.
+Tiêu hoá trong ống tiêu hoá:
+   * Thức ăn di chuyển theo một chiều qua các cơ quan của ống tiêu hoá.
+   * Thức ăn được biến đổi bằng tiêu hoá cơ học và hoá học.
+   * Chất dinh dưỡng được hấp thụ; phần còn lại được thải ra ngoài qua hậu môn.
+
+
+  
+
+
+
+4. Tiêu hoá thức ăn trong ống tiêu hoá ở người
+Ở người, ống tiêu hoá kết hợp với gan, tuỵ và các tuyến nước bọt tạo thành hệ tiêu hoá.
+Quá trình tiêu hoá được điều khiển bởi hệ thần kinh và hormone.
+a. Tiêu hoá ở khoang miệng
+Tiêu hoá cơ học
+   * Răng cắt, nghiền nhỏ thức ăn.
+   * Lưỡi đảo trộn thức ăn với nước bọt và tạo viên thức ăn.
+   * Phản xạ nuốt đưa thức ăn xuống thực quản.
+Tiêu hoá hoá học
+- Enzyme amylase trong nước bọt thuỷ phân tinh bột thành maltose.
+Vận chuyển: Thực quản co bóp theo kiểu nhu động, đẩy thức ăn xuống dạ dày.
+b. Tiêu hoá ở dạ dày
+Tiêu hoá cơ học
+   * Dạ dày co bóp, làm nhỏ và trộn thức ăn với dịch vị.
+   * Nhu động dạ dày đẩy thức ăn qua môn vị vào ruột non.
+Tiêu hoá hoá học
+   * Pepsin phân giải protein thành các peptide.
+   * HCl tạo môi trường acid, hỗ trợ hoạt động của pepsin và giúp hạn chế nhiều vi sinh vật có hại.  
+c. Tiêu hoá ở ruột non
+
+
+Tiêu hoá cơ học
+      * Các cơ ruột co thắt từng đoạn và tạo nhu động, giúp nhào trộn thức ăn với dịch tiêu hoá.
+      * Nhu động đẩy thức ăn dọc theo ruột non về phía ruột già.
+Tiêu hoá hoá học
+      * Dịch tụy và dịch ruột chứa enzyme phân giải các chất dinh dưỡng.
+      * Dịch mật do gan sản xuất giúp chia giọt mỡ lớn thành các giọt mỡ nhỏ, làm tăng diện tích tiếp xúc của lipid với enzyme lipase.
+Chất
+	Enzyme hoặc dịch tham gia
+	Sản phẩm
+	Carbohydrate
+	Amylase, maltase, lactase, sucrase
+	Đường đơn
+	Protein, peptide
+	Trypsin, chymotrypsin, peptidase, dipeptidase
+	Amino acid
+	Lipid
+	Dịch mật hỗ trợ nhũ tương hoá; lipase thuỷ phân
+	Glycerol, acid béo, monoglyceride
+	Lưu ý: Dịch mật không trực tiếp phân giải lipid bằng enzyme mà hỗ trợ quá trình tiêu hoá lipid.
+
+
+  
+
+d. Tiêu hoá ở ruột già
+      * Phần thức ăn còn lại hầu như không còn nhiều chất dinh dưỡng được hấp thụ sẽ đi vào ruột già.
+      * Nhu động ruột già đẩy phân về phía trực tràng.
+      * Phân được thải ra ngoài qua hậu môn.
+5. Hấp thụ chất dinh dưỡng
+a. Khái niệm
+Hấp thụ là quá trình các chất dinh dưỡng đi từ cơ quan tiêu hoá vào hệ tuần hoàn máu và hệ tuần hoàn bạch huyết.
+b. Nơi hấp thụ chủ yếu
+      * Hấp thụ chất dinh dưỡng chủ yếu diễn ra ở ruột non.
+      * Thành ruột non có nhiều nếp gấp, lông ruột và vi nhung mao, làm tăng diện tích hấp thụ.
+      * Theo SGK, diện tích hấp thụ của ruột non có thể đạt khoảng 250–300 m².
+c. Các chất được hấp thụ
+      * Amino acid.
+      * Đường đơn: glucose, galactose, fructose.
+      * Acid béo, glycerol, monoglyceride và cholesterol.
+      * Vitamin A, D, E, K, B, C,...
+      * Khoáng chất: Na⁺, K⁺, Ca²⁺, Mg²⁺, Fe²⁺, Cl⁻, HCO₃⁻,...
+      * Nước.
+Các chất dinh dưỡng đơn giản được hấp thụ theo hai phương thức: vận chuyển chủ động và vận chuyển thụ động.
+
+
+  
+
+6. Đồng hoá và sử dụng chất dinh dưỡng
+Sau khi hấp thụ, chất dinh dưỡng được hệ tuần hoàn vận chuyển đến các tế bào và được sử dụng để:
+      * Tổng hợp các chất sống, tạo tế bào mới.
+      * Đổi mới các thành phần tế bào.
+      * Sửa chữa tế bào bị hư hỏng.
+      * Dự trữ năng lượng.
+      * Cung cấp năng lượng cho các hoạt động sống.
+
+
+II. Ứng dụng
+1. Xây dụng chế độ ăn uống khoa học
+Chế độ ăn đủ năng lượng: Cần cung cấp đủ năng lượng dựa trên tuổi, giới tính và trạng thái sinh lý (mang thai, cho con bú,...). Carbohydrate, lipid và protein là những chất cung cấp năng lượng (1g carbohydrate hoặc 1g protein cung cấp 4,1kcal, 1g lipid cung cấp 9,3kcal).
+  
+
+Đủ các chất dinh dưỡng và khối lượng: Cơ thể cần đủ 6 nhóm chất dinh dưỡng chính: carbohydrate, lipid, protein, vitamin, khoáng chất và nước. Đặc biệt quan trọng là các chất dinh dưỡng thiết yếu và chất không sinh năng lượng nhưng vẫn cần cho sự phát triển của cơ thể như chất xơ.
+  
+
+Vệ sinh an toàn thực phẩm: Thực phẩm phải tươi, ngon, sạch. Chế độ ăn uống cần đảm bảo vệ sinh, ăn uống điều độ, tránh vận động ngay sau khi ăn để phòng tránh các bệnh về tiêu hóa. 
+
+
+2. Vai trò của việc sử dụng thực phẩm sạch trong đời sống
+      * Cung cấp dinh dưỡng & Tăng hiệu suất: Cung cấp các chất dinh dưỡng cần thiết cho cơ thể, tạo điều kiện tối ưu cho sự tồn tại và phát triển. Từ đó nâng cao năng suất lao động, tạo ra nhiều của cải, giảm thiểu chi phí y tế và thời gian điều trị bệnh.
+      * Bảo vệ sức khỏe người dùng: An toàn cho người sử dụng, tránh được các bệnh do tác nhân sinh học, hoá học, vật lí trong thức ăn gây ra.
+  
+
+3. Các bệnh về tiêu hoá và cách phòng tránh
+      * Các bệnh tiêu hóa thường gặp: Tiêu chảy, viêm loét dạ dày - tá tràng, ung thư đại tràng,...
+      * Nguyên nhân:
+      * Do ăn uống không đảm bảo vệ sinh.
+      * Do lối sống không lành mạnh: chế độ ăn không cân đối, ăn thực phẩm không phù hợp, uống nhiều rượu bia, hút nhiều thuốc lá, thời gian ăn uống tuỳ tiện,...
+      * Biện pháp phòng tránh:
+      * Có chế độ ăn đủ chất, đủ lượng.
+      * Hạn chế đồ mặn, đồ chiên xào.
+      * Đảm bảo vệ sinh an toàn thực phẩm.
+      * Ăn uống điều độ, tránh vận động ngay sau khi ăn.
+      * Áp dụng các biện pháp phòng tránh phù hợp với từng bệnh cụ thể.

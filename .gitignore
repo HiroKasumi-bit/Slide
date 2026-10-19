@@ -4,3 +4,7 @@ node_modules/
 # Reference videos fetched by the yt-dlp / pexels MCP servers
 media/downloads/*
 !media/downloads/.gitkeep
+
+# HyperFrames render work files and check artifacts (the final MP4 is copied into the deck)
+videos/*/renders/
+videos/*/.hyperframes/
