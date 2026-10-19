@@ -75,8 +75,16 @@ node tools/export-pdf.mjs decks/<tên>/index.html -t mix
 | `--png` | Ảnh không nén (nét hơn, nặng hơn) |
 | `--selector <css>` | Khi slide không dùng class `.slide` |
 | `--no-fullscreen` | Không yêu cầu mở toàn màn hình (khi gửi để đọc/in) |
+| `--window <giây>` | Với `--animate`: chỉ lấy mẫu N khung trong vài giây đầu (vd. `--animate=12 --window 2` → ~6 khung/giây, đủ mượt cho hiệu ứng chuyển trang) |
 
 Ghi đè từng slide bằng thuộc tính HTML: `<section class="slide" data-pdf-transition="zoom" data-pdf-duration="1.2">`.
+Với `--animate`, hiệu ứng chuyển trang HTML của deck được ghi thành khung hình nên PDF không thêm `/Trans` (trừ khi truyền `-t`).
+
+## Hiệu ứng chuyển trang trong deck HTML
+
+Deck mẫu `decks/bai-8-he-tieu-hoa/` có bộ điều khiển chuyển trang (Web Animations) với 17 hiệu ứng, khai báo từng slide bằng `data-transition="…"` (hiệu ứng để *đi tới* slide đó; lùi lại thì chạy ngược):
+`fade` · `push` · `slideup` · `cube` (khối lập phương xoay 3D) · `flip` (lật thẻ) · `zoom` · `blur` · `swirl` (xoáy) · `door` (cửa mở 3D) · `glitch` · `iris` (mống mắt, tâm đặt bằng `data-origin="x y"`) · `wipe` · `diagonal` · `blinds` (sáo dọc) · `shutter` (sáo ngang) · `split` (rèm mở giữa) · `cell` (tế bào nuốt màn hình, viền màng tế bào).
+Hiệu ứng mặt nạ dùng `mask-image` bù trừ nhau qua biến `--p` nên hai slide không chồng chữ. Phím **T** khi trình chiếu: thử lần lượt mọi hiệu ứng. Làm deck mới thì chép phần `TRANSITION ENGINE` trong script của deck này.
 
 Hiệu ứng chỉ hiện khi trình chiếu toàn màn hình trong **Adobe Acrobat Reader, Foxit, Okular** (và pdfpc, Impressive). macOS Preview và trình xem PDF của trình duyệt chỉ hiện trang tĩnh — nói rõ điều này với người dùng.
 

@@ -20,7 +20,10 @@
 //                            blinds | box | glitter | fly | zoom | replace | none | mix
 //                            (default: fade; "mix" cycles through a curated set)
 //   -d, --duration <sec>     Transition length in seconds (default: 0.7)
-//   --animate[=N]            Add N in-animation frames per slide (default N: 6)
+//   --animate[=N]            Add N in-animation frames per slide (default N: 6). The deck's own
+//                            HTML transitions are captured in those frames, so pages then get
+//                            no PDF transition unless -t is given explicitly
+//   --window <sec>           With --animate, sample only the first <sec> seconds of motion
 //   --steps                  One page per build step (fragments) instead of one per slide
 //   --scale <n>              Device scale factor: 1 = 1920×1080, 2 = 3840×2160 (default: 1)
 //   --png                    Lossless PNG frames (larger file) instead of JPEG
@@ -76,7 +79,7 @@ const MIME = {
 function usage(msg) {
   if (msg) console.error(`error: ${msg}\n`);
   console.error('usage: node tools/export-pdf.mjs <deck.html> [-o out.pdf] [-t fade|push|zoom|mix|...]');
-  console.error('       [-d 0.7] [--animate[=6]] [--steps] [--scale 1] [--png] [--quality 90]');
+  console.error('       [-d 0.7] [--animate[=6]] [--window 2] [--steps] [--scale 1] [--png] [--quality 90]');
   console.error('       [--selector .slide] [--wait 500] [--root dir] [--no-fullscreen]');
   process.exit(msg ? 1 : 0);
 }
@@ -95,11 +98,12 @@ function parseArgs(argv) {
     };
     if (a === '-h' || a === '--help') usage();
     else if (a === '-o' || a === '--out') opts.out = next();
-    else if (a === '-t' || a === '--transition') opts.transition = next().toLowerCase();
+    else if (a === '-t' || a === '--transition') { opts.transition = next().toLowerCase(); opts.transitionGiven = true; }
     else if (a === '-d' || a === '--duration') opts.duration = Number(next());
     else if (a === '--animate') opts.frames = 6;
     else if (a.startsWith('--animate=')) opts.frames = Number(a.slice(10));
     else if (a === '--steps') opts.steps = true;
+    else if (a === '--window') opts.window = Number(next());
     else if (a === '--scale') opts.scale = Number(next());
     else if (a === '--png') opts.png = true;
     else if (a === '--quality') opts.quality = Number(next());
@@ -243,7 +247,8 @@ async function captureState(page, opts) {
   const frames = [];
   await nextFrame(page);
   if (opts.frames > 0) {
-    const end = await page.evaluate(pageFreezeAnimations);
+    let end = await page.evaluate(pageFreezeAnimations);
+    if (opts.window > 0) end = Math.min(end, opts.window * 1000);
     if (end > 0) {
       for (let k = 0; k < opts.frames; k++) {
         await page.evaluate(pageSeekAnimations, (end * k) / opts.frames);
@@ -326,6 +331,8 @@ async function captureDeck(page, opts) {
 // --- PDF assembly ----------------------------------------------------------------
 
 function transitionFor(opts, slide, meta) {
+  // Animated exports already contain the deck's own transition as frames
+  if (opts.frames > 0 && !opts.transitionGiven) return null;
   const name = (meta.transition ?? (opts.transition === 'mix' ? MIX[slide % MIX.length] : opts.transition)).toLowerCase();
   if (!(name in TRANSITIONS)) {
     console.warn(`  ⚠ slide ${slide + 1}: unknown transition "${name}", using fade`);
