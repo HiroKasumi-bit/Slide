@@ -35,10 +35,11 @@ Chọn skill:
 Ghi chú:
 - Video giải thích một chủ đề (vd. phần “Ứng dụng” của bài) → `faceless-explainer`; đoạn motion ngắn dưới 10 giây → `motion-graphics`.
 - Lần đầu render HyperFrames cần `npx hyperframes browser ensure` (tải Chrome Headless Shell, đã chạy được ở cloud). `npx hyperframes doctor` để kiểm tra.
-- Lồng tiếng (TTS) và nhạc nền cục bộ chưa cài; hỏi người dùng trước khi cài thêm.
+- **Lồng tiếng tiếng Việt**: Kokoro (`npx hyperframes tts`) không có tiếng Việt → dùng `edge-tts` (giọng `vi-VN-HoaiMyNeural` nữ, `vi-VN-NamMinhNeural` nam; cài trong venv, ở cloud phải truyền `proxy=$HTTPS_PROXY` và `SSL_CERT_FILE=/root/.ccr/ca-bundle.crt`). Phụ đề giữ nguyên chữ, chỉ lời đọc phiên âm thuật ngữ (enzyme → "en dim", HCl → "hát xê lờ").
+- **Nhạc nền**: tự tổng hợp bằng numpy/scipy (pad + arpeggio + chuông, không lo bản quyền), hạ nhỏ dưới giọng bằng `sidechaincompress`, chuẩn hoá −16 LUFS. Câu đọc dài hơn khung phụ đề thì **giãn thời gian cảnh** (bảng `WARP` trong `index.html`) thay vì cắt lời. Mẫu: `videos/tieu-hoa-3d/audio/` — chạy `narration.py` → `timeline.py` → `music.py` → render → `mix.py`.
 - Video dự án đặt ở `videos/<tên>/`. Muốn đưa video vào deck thì xuất MP4 rồi nhúng `<video>` vào slide; trong PDF chỉ còn khung hình tĩnh, nên chèn ảnh các cảnh ngay sau slide video: `ffmpeg -ss <giây> -i video.mp4 -frames:v 1 canh.jpg` rồi `node tools/insert-images.mjs deck.pdf <số trang slide video> out.pdf canh*.jpg`.
 - HyperFrames ở cloud: CDN jsdelivr bị chặn → chép `gsap.min.js` từ npm (`npm pack gsap`) vào `assets/vendor/`; font phải có `@font-face` trỏ file cục bộ ngay trong `index.html`; di chuyển phần tử bằng `x`/`y` (transform), không dùng `left`/`top` (lint báo lỗi vì giật hình). Chạy `npx hyperframes check` đến khi đạt, xem `snapshot --at` trước khi `render` (~10 khung/giây ở cloud).
-- Ví dụ hoàn chỉnh: `decks/bai-8-he-tieu-hoa/` (deck) và `videos/tieu-hoa-3d/` (video 3D nhúng ở slide 12 của deck).
+- Ví dụ hoàn chỉnh: `decks/bai-8-dinh-duong-tieu-hoa/` (deck) và `videos/tieu-hoa-3d/` (video 3D nhúng ở slide 12 của deck).
 - **Video 3D**: dùng Three.js qua adapter `three` của HyperFrames (xem `hyperframes-animation/adapters/three.md`). Chép `three.module.js` + `three.core.js` và các addon cần (postprocessing bloom, RoomEnvironment) từ `npm pack three` vào `assets/vendor/three/`, khai báo importmap trỏ file cục bộ. Cảnh phải là hàm thuần của thời gian `renderAt(t)` gọi từ sự kiện `hf-seek`; hình dạng cơ quan dựng thủ tục (tube quét theo đường cong, bán kính thay đổi theo thời gian để tạo nhu động). Ở cloud render bằng SwiftShader ~2 khung/giây với `-w 3`; xem `snapshot --at` trước để chỉnh ánh sáng (bloom + env map dễ làm màu bạc trắng).
 
 ## Quy tắc khi làm slide
@@ -54,6 +55,7 @@ Ghi chú:
 - Sau khi dựng, luôn xuất PDF rồi xem ảnh từng trang (`pdftoppm -r 50 -png deck.pdf /tmp/p`) để kiểm tra tràn chữ, chồng lấn, lỗi font.
 - Chữ gradient (`background-clip: text`) hoặc dòng có `overflow: hidden` + `line-height` thấp sẽ **cắt mất dấu tiếng Việt** (Ở → Ơ, Ộ → O). Thêm padding trên/dưới ~0.16em cho phần tử đó.
 - Chữ trắng trên nền màu cần tương phản ≥ 3:1 (chữ lớn). Bảng màu đã kiểm: xanh lá `#3a9a4a`, xanh ngọc `#178a79`, đỏ san hô `#d63f4d`, cam `#d8652a`, tím `#7b5ea7`, xanh dương `#2f6fde`; vàng `#efb02a` phải dùng chữ tối.
+- Hình minh hoạ/biểu tượng phải **rõ nghĩa và chi tiết** (người dùng chê icon nét mảnh là “đơn sơ”): vẽ SVG kiểu sticker — viền đậm, tô màu, điểm sáng, có con vật/cơ quan thật (ếch bắt mồi, thuỷ tức, lông ruột, tế bào có nhân, ty thể…). Hoạt ảnh lặp phải kể một quá trình (thức ăn vào → bị cắt nhỏ → hấp thụ → thải) và khung nào bị chụp vào PDF cũng vẫn đọc được. `offset-path` đặt trên chính phần tử chuyển động, không đặt trên nhóm cha (bị dịch hai lần).
 - Khi người dùng yêu cầu giữ nguyên nội dung: chép đúng từng chữ (chỉ sửa lỗi chính tả và báo lại), rồi đối chiếu tự động từng dòng của tài liệu gốc với chữ trong HTML trước khi giao.
 
 ## Xuất PDF có hiệu ứng (`tools/export-pdf.mjs`)
@@ -83,7 +85,7 @@ Với `--animate`, hiệu ứng chuyển trang HTML của deck được ghi thà
 
 ## Hiệu ứng chuyển trang trong deck HTML
 
-Deck mẫu `decks/bai-8-he-tieu-hoa/` có bộ điều khiển chuyển trang (Web Animations) với 17 hiệu ứng, khai báo từng slide bằng `data-transition="…"` (hiệu ứng để *đi tới* slide đó; lùi lại thì chạy ngược):
+Deck mẫu `decks/bai-8-dinh-duong-tieu-hoa/` có bộ điều khiển chuyển trang (Web Animations) với 17 hiệu ứng, khai báo từng slide bằng `data-transition="…"` (hiệu ứng để *đi tới* slide đó; lùi lại thì chạy ngược):
 `fade` · `push` · `slideup` · `cube` (khối lập phương xoay 3D) · `flip` (lật thẻ) · `zoom` · `blur` · `swirl` (xoáy) · `door` (cửa mở 3D) · `glitch` · `iris` (mống mắt, tâm đặt bằng `data-origin="x y"`) · `wipe` · `diagonal` · `blinds` (sáo dọc) · `shutter` (sáo ngang) · `split` (rèm mở giữa) · `cell` (tế bào nuốt màn hình, viền màng tế bào).
 Hiệu ứng mặt nạ dùng `mask-image` bù trừ nhau qua biến `--p` nên hai slide không chồng chữ. Phím **T** khi trình chiếu: thử lần lượt mọi hiệu ứng. Làm deck mới thì chép phần `TRANSITION ENGINE` trong script của deck này.
 
@@ -94,7 +96,7 @@ Hiệu ứng chỉ hiện khi trình chiếu toàn màn hình trong **Adobe Acro
 - **`yt-dlp`** (`@kevinwatt/yt-dlp-mcp`, không cần API key): tìm video YouTube (`ytdlp_search_videos`), đọc metadata, phụ đề/transcript, bình luận, tải video/audio. Dùng để tìm video mẫu về thiết kế slide, hiệu ứng chuyển cảnh, bài nói tham khảo. Cần `yt-dlp` trên máy (`pip install yt-dlp`). File tải về lưu ở `media/downloads/` (không commit).
 - **`pexels`** (`mcp-pexels`): tìm và tải video/ảnh stock miễn phí bản quyền để làm nền slide. Cần `PEXELS_API_KEY` (đăng ký miễn phí tại pexels.com/api) đặt trong biến môi trường; thiếu key thì server không khởi động.
 
-Video nhúng vào deck chỉ chạy trong HTML; trong PDF nó là ảnh tĩnh của khung hình đang hiển thị.
+Video nhúng vào deck chỉ chạy trong HTML; trong PDF nó là ảnh tĩnh của khung hình đang hiển thị. Deck tự phát video có tiếng khi tới slide (đã có thao tác phím/chuột); nếu trình duyệt chặn thì phát không tiếng và hiện nút đỏ “Bấm để bật tiếng”.
 
 ## Tìm và cập nhật skill
 

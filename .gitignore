@@ -8,3 +8,4 @@ media/downloads/*
 # HyperFrames render work files and check artifacts (the final MP4 is copied into the deck)
 videos/*/renders/
 videos/*/.hyperframes/
+videos/*/assets/audio/music.wav

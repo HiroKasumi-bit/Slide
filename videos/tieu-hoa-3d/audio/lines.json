@@ -1,0 +1,107 @@
+[
+ {
+  "id": "title",
+  "text": "Tiêu hoá thức ăn trong ống tiêu hoá ở người.",
+  "spoken": "Tiêu hoá thức ăn trong ống tiêu hoá ở người.",
+  "file": "assets/audio/voice/title.mp3",
+  "duration": 3.456
+ },
+ {
+  "id": "b1",
+  "text": "Tiêu hoá ở khoang miệng. Răng cắt, nghiền nhỏ thức ăn.",
+  "spoken": "Tiêu hoá ở khoang miệng. Răng cắt, nghiền nhỏ thức ăn.",
+  "file": "assets/audio/voice/b1.mp3",
+  "duration": 5.04
+ },
+ {
+  "id": "b2",
+  "text": "Enzyme amylase trong nước bọt thuỷ phân tinh bột thành maltose.",
+  "spoken": "En dim a mi la dơ trong nước bọt thuỷ phân tinh bột thành man tô dơ.",
+  "file": "assets/audio/voice/b2.mp3",
+  "duration": 4.728
+ },
+ {
+  "id": "c",
+  "text": "Thực quản co bóp theo kiểu nhu động, đẩy thức ăn xuống dạ dày.",
+  "spoken": "Thực quản co bóp theo kiểu nhu động, đẩy thức ăn xuống dạ dày.",
+  "file": "assets/audio/voice/c.mp3",
+  "duration": 4.536
+ },
+ {
+  "id": "d1",
+  "text": "Tiêu hoá ở dạ dày. Dạ dày co bóp, làm nhỏ và trộn thức ăn với dịch vị.",
+  "spoken": "Tiêu hoá ở dạ dày. Dạ dày co bóp, làm nhỏ và trộn thức ăn với dịch vị.",
+  "file": "assets/audio/voice/d1.mp3",
+  "duration": 6.816
+ },
+ {
+  "id": "d2",
+  "text": "Pepsin phân giải protein thành các peptide.",
+  "spoken": "Pép xin phân giải prô tê in thành các pép tít.",
+  "file": "assets/audio/voice/d2.mp3",
+  "duration": 3.552
+ },
+ {
+  "id": "d3",
+  "text": "HCl tạo môi trường acid, hỗ trợ hoạt động của pepsin và giúp hạn chế nhiều vi sinh vật có hại.",
+  "spoken": "Hát xê lờ tạo môi trường a xít, hỗ trợ hoạt động của pép xin và giúp hạn chế nhiều vi sinh vật có hại.",
+  "file": "assets/audio/voice/d3.mp3",
+  "duration": 6.624
+ },
+ {
+  "id": "e1",
+  "text": "Tiêu hoá ở ruột non. Dịch tụy và dịch ruột chứa enzyme phân giải các chất dinh dưỡng.",
+  "spoken": "Tiêu hoá ở ruột non. Dịch tụy và dịch ruột chứa en dim phân giải các chất dinh dưỡng.",
+  "file": "assets/audio/voice/e1.mp3",
+  "duration": 6.576
+ },
+ {
+  "id": "e2",
+  "text": "Dịch mật do gan sản xuất giúp chia giọt mỡ lớn thành các giọt mỡ nhỏ, làm tăng diện tích tiếp xúc của lipid với enzyme lipase.",
+  "spoken": "Dịch mật do gan sản xuất giúp chia giọt mỡ lớn thành các giọt mỡ nhỏ, làm tăng diện tích tiếp xúc của li pít với en dim li pa dơ.",
+  "file": "assets/audio/voice/e2.mp3",
+  "duration": 8.016
+ },
+ {
+  "id": "e3",
+  "text": "Nhu động đẩy thức ăn dọc theo ruột non về phía ruột già.",
+  "spoken": "Nhu động đẩy thức ăn dọc theo ruột non về phía ruột già.",
+  "file": "assets/audio/voice/e3.mp3",
+  "duration": 4.08
+ },
+ {
+  "id": "f1",
+  "text": "Hấp thụ chất dinh dưỡng chủ yếu diễn ra ở ruột non.",
+  "spoken": "Hấp thụ chất dinh dưỡng chủ yếu diễn ra ở ruột non.",
+  "file": "assets/audio/voice/f1.mp3",
+  "duration": 3.84
+ },
+ {
+  "id": "f2",
+  "text": "Thành ruột non có nhiều nếp gấp, lông ruột và vi nhung mao, làm tăng diện tích hấp thụ.",
+  "spoken": "Thành ruột non có nhiều nếp gấp, lông ruột và vi nhung mao, làm tăng diện tích hấp thụ.",
+  "file": "assets/audio/voice/f2.mp3",
+  "duration": 6.048
+ },
+ {
+  "id": "g1",
+  "text": "Tiêu hoá ở ruột già. Nhu động ruột già đẩy phân về phía trực tràng.",
+  "spoken": "Tiêu hoá ở ruột già. Nhu động ruột già đẩy phân về phía trực tràng.",
+  "file": "assets/audio/voice/g1.mp3",
+  "duration": 5.76
+ },
+ {
+  "id": "g2",
+  "text": "Phân được thải ra ngoài qua hậu môn.",
+  "spoken": "Phân được thải ra ngoài qua hậu môn.",
+  "file": "assets/audio/voice/g2.mp3",
+  "duration": 3.024
+ },
+ {
+  "id": "recap",
+  "text": "Quá trình dinh dưỡng gồm 4 giai đoạn: lấy thức ăn, tiêu hoá thức ăn, hấp thụ chất dinh dưỡng, đồng hoá các chất.",
+  "spoken": "Quá trình dinh dưỡng gồm bốn giai đoạn: lấy thức ăn, tiêu hoá thức ăn, hấp thụ chất dinh dưỡng, đồng hoá các chất.",
+  "file": "assets/audio/voice/recap.mp3",
+  "duration": 7.512
+ }
+]
