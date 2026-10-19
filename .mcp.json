@@ -1,0 +1,18 @@
+{
+  "mcpServers": {
+    "yt-dlp": {
+      "command": "npx",
+      "args": ["-y", "@kevinwatt/yt-dlp-mcp@0.10.0"],
+      "env": {
+        "YTDLP_DOWNLOADS_DIR": "${YTDLP_DOWNLOADS_DIR:-media/downloads}"
+      }
+    },
+    "pexels": {
+      "command": "npx",
+      "args": ["-y", "mcp-pexels@1.0.2"],
+      "env": {
+        "PEXELS_API_KEY": "${PEXELS_API_KEY:-}"
+      }
+    }
+  }
+}

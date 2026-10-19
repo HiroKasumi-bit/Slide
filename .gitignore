@@ -1,0 +1,6 @@
+node_modules/
+.frontend-slides/
+
+# Reference videos fetched by the yt-dlp / pexels MCP servers
+media/downloads/*
+!media/downloads/.gitkeep
