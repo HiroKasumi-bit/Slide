@@ -1244,12 +1244,10 @@ tr.rv > td {
 @keyframes snip { 0%, 40% { opacity: 1; } 55%, 85% { opacity: 0.15; } }
 
 /* absorption: nutrients sink into the villus */
-.il-absorb .nut > * { animation: sink 3s ease-in infinite; }
-.il-absorb .nut .n2 { animation-delay: -1s; }
-.il-absorb .nut .n3 { animation-delay: -2s; }
-.il-absorb .nut .n4 { animation-delay: -1.5s; }
-.il-absorb .nut .n5 { animation-delay: -0.5s; }
-@keyframes sink { 0% { translate: 0 0; opacity: 0; } 15% { opacity: 1; } 70% { opacity: 1; } 100% { translate: calc((80px - 50%) * 0) 70px; opacity: 0; } }
+.il-absorb .nut > * { animation: sink 2.6s ease-in infinite; }
+.il-absorb .nut .n2 { animation-delay: -0.9s; }
+.il-absorb .nut .n3 { animation-delay: -1.7s; }
+@keyframes sink { 0% { translate: 0 0; opacity: 0; } 15% { opacity: 1; } 70% { opacity: 1; } 100% { translate: 0 30px; opacity: 0; scale: 0.5; } }
 
 /* assimilation: building blocks join a growing chain, energy flickers */
 .il-assim .build circle { transform-box: fill-box; transform-origin: center; animation: join 4s var(--spring) infinite; animation-delay: calc(var(--k) * 0.35s - 4s); }
@@ -1293,10 +1291,10 @@ tr.rv > td {
 .il-sac .drop { fill: #9b7fd0; animation: sac-drop 9s ease-in-out infinite; }
 .il-sac .waste { animation: sac-waste 9s ease-in-out infinite; }
 @keyframes sac-prey {
-    0% { translate: 0 -6px; opacity: 0; scale: 1; }
-    6% { opacity: 1; }
-    26% { translate: 0 140px; scale: 1; opacity: 1; }
-    34%, 100% { translate: 0 140px; scale: 0.2; opacity: 0; }
+    0% { translate: 0 0; opacity: 0; scale: 0.5; }
+    7% { translate: 0 0; opacity: 1; scale: 1; }
+    26% { translate: 0 78px; scale: 1; opacity: 1; }
+    34%, 100% { translate: 0 78px; scale: 0.2; opacity: 0; }
 }
 @keyframes sac-frag {
     0%, 28% { translate: 0 0; opacity: 0; scale: 0.4; }
@@ -1314,8 +1312,8 @@ tr.rv > td {
 @keyframes sac-waste {
     0%, 70% { translate: 0 0; opacity: 0; scale: 0.4; }
     75% { translate: 0 0; opacity: 1; scale: 1; }
-    95% { translate: 0 -170px; opacity: 1; scale: 1; }
-    100% { translate: 0 -180px; opacity: 0; scale: 1; }
+    93% { translate: 0 -86px; opacity: 1; scale: 0.9; }
+    100% { translate: 0 -90px; opacity: 0; scale: 0.5; }
 }
 
 /* --- Slide 10: one-way tube — the bolus slows in the stomach, shrinks as it is absorbed --- */
@@ -1328,7 +1326,7 @@ tr.rv > td {
     0% { offset-distance: 0%; opacity: 0; }
     3% { opacity: 1; }
     10% { offset-distance: var(--sto); }
-    30% { offset-distance: var(--si); }
+    32% { offset-distance: var(--si); }
     70% { offset-distance: var(--li); }
     94% { offset-distance: 100%; opacity: 1; }
     100% { offset-distance: 100%; opacity: 0; }
@@ -1421,6 +1419,31 @@ tr.rv > td {
 .villi .vdot { animation: sink-v 3s ease-in infinite; animation-delay: calc(var(--k) * -0.75s); }
 @keyframes sway-v { from { rotate: -4deg; } to { rotate: 4deg; } }
 @keyframes sink-v { 0% { translate: 0 -10px; opacity: 0; } 25% { opacity: 1; } 100% { translate: 0 40px; opacity: 0; } }
+
+/* --- Click-to-zoom for pictures and drawings --- */
+.slide .fig img, .slide svg.il { cursor: zoom-in; }
+.zoom-layer {
+    position: absolute;
+    inset: 0;
+    z-index: 20;
+    display: none;
+    place-items: center;
+    background: rgba(20, 30, 26, 0.72);
+    backdrop-filter: blur(6px);
+    cursor: zoom-out;
+}
+.zoom-layer.open { display: grid; }
+.zoom-box {
+    padding: 28px;
+    border-radius: 34px;
+    background: #fff;
+    box-shadow: 0 40px 120px rgba(0, 0, 0, 0.35);
+    box-sizing: content-box;
+}
+.zoom-box > img, .zoom-box > svg { display: block; width: 100%; height: 100%; object-fit: contain; }
+.zoom-cap { position: absolute; left: 0; right: 0; bottom: 34px; text-align: center; color: #fff; font: 600 26px/1.3 var(--display); }
+.zoom-cap:empty { display: none; }
+.zoom-hint { position: absolute; top: 26px; right: 40px; padding: 10px 18px; border-radius: 999px; background: rgba(255, 255, 255, 0.16); color: #fff; font: 500 20px/1 var(--display); }
 
 </style>
 </head>
@@ -1520,20 +1543,12 @@ tr.rv > td {
   </g>
   <g fill="#fff" opacity=".85"><circle cx="86" cy="60" r="3"/><circle cx="100" cy="66" r="2"/><circle cx="66" cy="112" r="2.4"/></g>
 </svg></div></div><p>Tiêu hoá thức ăn.</p></div><div class="stage pop" style="--d:0.79s;--rot:-1deg"><div class="stage-top"><span>3</span><div class="medal"><svg class="il il-absorb" viewBox="0 0 160 160" aria-hidden="true">
-  <path d="M0 148 C10 136 22 136 30 148 M130 148 C138 136 150 136 160 148" fill="#f6b6b0" stroke="#b8444f" stroke-width="3"/>
-  <g fill="#f6b6b0" stroke="#b8444f" stroke-width="1.6"><circle cx="44" cy="132" r="3.2"/><circle cx="44" cy="116" r="3.2"/><circle cx="45" cy="100" r="3.2"/><circle cx="47" cy="84" r="3.2"/><circle cx="50" cy="68" r="3.2"/><circle cx="55" cy="54" r="3.2"/><circle cx="62" cy="42" r="3.2"/><circle cx="71" cy="34" r="3.2"/><circle cx="80" cy="31" r="3.2"/><circle cx="89" cy="34" r="3.2"/><circle cx="98" cy="42" r="3.2"/><circle cx="105" cy="54" r="3.2"/><circle cx="110" cy="68" r="3.2"/><circle cx="113" cy="84" r="3.2"/><circle cx="115" cy="100" r="3.2"/><circle cx="116" cy="116" r="3.2"/><circle cx="116" cy="132" r="3.2"/></g>
-  <path d="M44 150 L44 96 C44 56 58 32 80 32 C102 32 116 56 116 96 L116 150 Z" fill="#f6b6b0" stroke="#b8444f" stroke-width="3.5"/>
-  <path d="M62 150 V92 C62 74 70 64 80 64 C90 64 98 74 98 92 V150" fill="none" stroke="#d63f4d" stroke-width="4.5"/>
-  <path d="M62 112 C70 104 76 120 80 112 C84 104 90 120 98 112 M62 90 C70 82 76 98 80 90 C84 82 90 98 98 90" fill="none" stroke="#d63f4d" stroke-width="2.4"/>
-  <path d="M74 150 V96 C74 88 77 84 80 84 C83 84 86 88 86 96 V150" fill="#fff6d8" stroke="#e0b44c" stroke-width="2.5"/>
-  <path d="M98 150 V120" stroke="#3d68c8" stroke-width="4.5"/>
-  <g class="nut">
-    <circle class="n1" cx="38" cy="16" r="6" fill="#7dd87a" stroke="#2f7d3c" stroke-width="2"/>
-    <rect class="n2" x="73" y="2" width="12" height="12" rx="2" fill="#ffd166" stroke="#946000" stroke-width="2" transform="rotate(20 79 8)"/>
-    <circle class="n3" cx="122" cy="14" r="5.5" fill="#ffa04a" stroke="#a5521a" stroke-width="2"/>
-    <circle class="n4" cx="56" cy="2" r="4.5" fill="#7dd87a" stroke="#2f7d3c" stroke-width="2"/>
-    <circle class="n5" cx="104" cy="4" r="4.5" fill="#ffd166" stroke="#946000" stroke-width="2"/>
-  </g>
+  <path d="M4 132 Q80 122 156 132 V154 Q80 160 4 154 Z" fill="#e98f8c" stroke="#b8444f" stroke-width="3"/>
+  <path d="M8 141 H152" stroke="#d63f4d" stroke-width="4" stroke-linecap="round"/>
+  <path d="M8 149 H152" stroke="#3d68c8" stroke-width="4" stroke-linecap="round"/>
+  <g fill="#f6b6b0" stroke="#b8444f" stroke-width="1.4"><circle cx="56.0" cy="73.0" r="2.2"/><circle cx="53.9" cy="65.0" r="2.2"/><circle cx="48.0" cy="59.1" r="2.2"/><circle cx="40.0" cy="57.0" r="2.2"/><circle cx="32.0" cy="59.1" r="2.2"/><circle cx="26.1" cy="65.0" r="2.2"/><circle cx="24.0" cy="73.0" r="2.2"/></g><path d="M25.0 130 V73.0 A15.0 15.0 0 0 1 55.0 73.0 V130" fill="#f6b6b0" stroke="#b8444f" stroke-width="3"/><path d="M32 140 V73.0 A8 8 0 0 1 40 65.0" fill="none" stroke="#d63f4d" stroke-width="3.2"/><path d="M40 65.0 A8 8 0 0 1 48 73.0 V149" fill="none" stroke="#3d68c8" stroke-width="3.2"/><rect x="37.5" y="77.0" width="5" height="53.0" rx="2.5" fill="#fff3c4" stroke="#e0b44c" stroke-width="1.4"/><g fill="#f6b6b0" stroke="#b8444f" stroke-width="1.4"><circle cx="96.0" cy="49.0" r="2.2"/><circle cx="93.9" cy="41.0" r="2.2"/><circle cx="88.0" cy="35.1" r="2.2"/><circle cx="80.0" cy="33.0" r="2.2"/><circle cx="72.0" cy="35.1" r="2.2"/><circle cx="66.1" cy="41.0" r="2.2"/><circle cx="64.0" cy="49.0" r="2.2"/></g><path d="M65.0 130 V49.0 A15.0 15.0 0 0 1 95.0 49.0 V130" fill="#f6b6b0" stroke="#b8444f" stroke-width="3"/><path d="M72 140 V49.0 A8 8 0 0 1 80 41.0" fill="none" stroke="#d63f4d" stroke-width="3.2"/><path d="M80 41.0 A8 8 0 0 1 88 49.0 V149" fill="none" stroke="#3d68c8" stroke-width="3.2"/><rect x="77.5" y="53.0" width="5" height="77.0" rx="2.5" fill="#fff3c4" stroke="#e0b44c" stroke-width="1.4"/><g fill="#f6b6b0" stroke="#b8444f" stroke-width="1.4"><circle cx="136.0" cy="73.0" r="2.2"/><circle cx="133.9" cy="65.0" r="2.2"/><circle cx="128.0" cy="59.1" r="2.2"/><circle cx="120.0" cy="57.0" r="2.2"/><circle cx="112.0" cy="59.1" r="2.2"/><circle cx="106.1" cy="65.0" r="2.2"/><circle cx="104.0" cy="73.0" r="2.2"/></g><path d="M105.0 130 V73.0 A15.0 15.0 0 0 1 135.0 73.0 V130" fill="#f6b6b0" stroke="#b8444f" stroke-width="3"/><path d="M112 140 V73.0 A8 8 0 0 1 120 65.0" fill="none" stroke="#d63f4d" stroke-width="3.2"/><path d="M120 65.0 A8 8 0 0 1 128 73.0 V149" fill="none" stroke="#3d68c8" stroke-width="3.2"/><rect x="117.5" y="77.0" width="5" height="53.0" rx="2.5" fill="#fff3c4" stroke="#e0b44c" stroke-width="1.4"/>
+  <g class="arrows" fill="none" stroke="#2f7d3c" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"><path d="M40 32 v9 m-5 -5 l5 5 l5 -5"/><path d="M80 14 v9 m-5 -5 l5 5 l5 -5"/><path d="M120 32 v9 m-5 -5 l5 5 l5 -5"/></g>
+  <g class="nut"><circle class="n1" cx="40" cy="20" r="5" fill="#7dd87a" stroke="#2f7d3c" stroke-width="2"/><circle class="n2" cx="80" cy="2" r="5" fill="#ffd166" stroke="#946000" stroke-width="2"/><circle class="n3" cx="120" cy="20" r="5" fill="#ffa04a" stroke="#a5521a" stroke-width="2"/></g>
 </svg></div></div><p>Hấp thụ chất dinh dưỡng.</p></div><div class="stage pop" style="--d:0.91s;--rot:2deg"><div class="stage-top"><span>4</span><div class="medal"><svg class="il il-assim" viewBox="0 0 160 160" aria-hidden="true">
   <path d="M80 10 C122 8 150 40 150 80 C152 122 120 152 80 150 C38 152 8 122 10 80 C8 40 38 12 80 10 Z" fill="#e6dcf6" stroke="#5f4590" stroke-width="3.5"/>
   <path d="M80 18 C116 16 142 44 142 80 C144 116 116 144 80 142" fill="none" stroke="#b9a3e0" stroke-width="2" stroke-dasharray="3 5"/>
@@ -1598,7 +1613,7 @@ tr.rv > td {
   <g class="enzyme-big"><path d="M846 150 L896 124 A40 40 0 1 0 896 176 Z" fill="#9b7fd0" stroke="#4d3478" stroke-width="4" stroke-linejoin="round"/>
     <circle cx="872" cy="128" r="5" fill="#2b2320"/><circle cx="874" cy="126" r="1.6" fill="#fff"/></g>
   <g font-family="Lexend, sans-serif" font-size="27" font-weight="600" fill="#946000" text-anchor="middle">
-    <text x="580" y="236">cấu tạo phức tạp</text><text x="1140" y="236">phân tử nhỏ, đơn giản</text>
+    <text x="580" y="236">cấu tạo phức tạp</text><text x="871" y="236" fill="#5f4590">Enzyme tiêu hoá</text><text x="1140" y="236">phân tử nhỏ, đơn giản</text>
   </g>
 </svg></div>
   </div>
@@ -1680,7 +1695,7 @@ tr.rv > td {
   <ellipse cx="290" cy="224" rx="44" ry="9" fill="#6aa850" stroke="#3f7f2d" stroke-width="3"/>
   </g>
   <g class="sac-anim">
-    <g class="prey"><circle cx="290" cy="0" r="13" fill="#d8652a" stroke="#7a3208" stroke-width="3"/><circle cx="286" cy="-4" r="3.5" fill="#fff" opacity=".7"/></g>
+    <g class="prey"><circle cx="290" cy="62" r="12" fill="#d8652a" stroke="#7a3208" stroke-width="3"/><circle cx="286" cy="58" r="3.2" fill="#fff" opacity=".7"/></g>
     <circle class="drop" style="--sx:-36px;--sy:-36px" cx="290" cy="140" r="3.5"/><circle class="drop" style="--sx:36px;--sy:-30px" cx="290" cy="140" r="3.5"/><circle class="drop" style="--sx:-38px;--sy:24px" cx="290" cy="140" r="3.5"/><circle class="drop" style="--sx:38px;--sy:30px" cx="290" cy="140" r="3.5"/>
     <circle class="frag" style="--fx:-18px;--fy:-16px;--wx:-34px;--wy:-30px" cx="290" cy="140" r="5.5"/><circle class="frag" style="--fx:18px;--fy:-12px;--wx:34px;--wy:-24px" cx="290" cy="140" r="5.5"/><circle class="frag" style="--fx:-20px;--fy:12px;--wx:-36px;--wy:22px" cx="290" cy="140" r="5.5"/><circle class="frag" style="--fx:20px;--fy:16px;--wx:34px;--wy:30px" cx="290" cy="140" r="5.5"/><circle class="frag" style="--fx:0px;--fy:24px;--wx:2px;--wy:56px" cx="290" cy="140" r="5.5"/>
     <circle class="waste" cx="290" cy="150" r="7" fill="#8a5a2b" stroke="#4a2e12" stroke-width="2.5"/>
@@ -1696,27 +1711,27 @@ tr.rv > td {
       <ul class="bl"><li class="rv" style="--d:0.50s">Thức ăn đi vào túi qua miệng.</li><li class="rv" style="--d:0.58s">Enzyme được tiết vào túi để phân giải thức ăn thành những mảnh nhỏ.</li><li class="rv" style="--d:0.66s">Các tế bào thành túi tiếp tục thu nhận và tiêu hoá nội bào.</li><li class="rv" style="--d:0.74s">Chất thải được đưa ra ngoài qua miệng.</li></ul>
     </article>
     <article class="card duo-card flip" style="--d:.45s">
-      <svg class="il il-tube" viewBox="0 0 580 240" aria-hidden="true" style="--sto:12.25%;--si:31.57%;--li:79.73%">
-  <path d="M240 196 H430" fill="none" stroke="#d63f4d" stroke-width="10" stroke-linecap="round"/>
-  <path d="M240 196 H430" fill="none" stroke="#ff8a8a" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 14" class="blood"/>
-  <path d="M40 60 H128" fill="none" stroke="#b8444f" stroke-width="22" stroke-linecap="round"/>
-  <path d="M40 60 H128" fill="none" stroke="#f19a9a" stroke-width="14" stroke-linecap="round"/>
-  <path d="M440 128 C470 128 500 128 512 140 C526 154 526 176 526 210" fill="none" stroke="#8a4a26" stroke-width="40" stroke-linecap="round"/>
-  <path d="M440 128 C470 128 500 128 512 140 C526 154 526 176 526 210" fill="none" stroke="#e7a477" stroke-width="32" stroke-linecap="round"/>
-  <path d="M440 128 C470 128 500 128 512 140 C526 154 526 176 526 210" fill="none" stroke="#c4733f" stroke-width="32" stroke-dasharray="3 14"/>
-  <path d="M214 104 C222 104 224 106 228 106 C246 108 246 150 262 150 C280 150 280 106 298 106 C316 106 316 150 334 150 C352 150 352 106 370 106 C388 106 388 150 406 150 C420 150 426 128 446 128" fill="none" stroke="#b8545a" stroke-width="22" stroke-linecap="round"/>
-  <path d="M214 104 C222 104 224 106 228 106 C246 108 246 150 262 150 C280 150 280 106 298 106 C316 106 316 150 334 150 C352 150 352 106 370 106 C388 106 388 150 406 150 C420 150 426 128 446 128" fill="none" stroke="#f6b0a6" stroke-width="14" stroke-linecap="round"/>
-  <path d="M118 60 C130 30 196 26 216 62 C232 92 222 112 204 116 C176 122 146 104 136 82 C132 72 126 64 118 60 Z" fill="#f19a9a" stroke="#b8444f" stroke-width="4" stroke-linejoin="round"/>
-  <path d="M150 54 C172 48 196 58 204 78 M146 74 C164 76 184 88 192 104" fill="none" stroke="#d96b72" stroke-width="3" stroke-linecap="round"/>
-  <ellipse cx="38" cy="60" rx="9" ry="17" fill="#7a2a35" stroke="#b8444f" stroke-width="4"/>
-  <g class="nutri-drop"><circle style="--k:0" cx="262" cy="160" r="5" fill="#7dd87a" stroke="#555" stroke-width="1.2"/><circle style="--k:1" cx="298" cy="160" r="5" fill="#ffd166" stroke="#555" stroke-width="1.2"/><circle style="--k:2" cx="334" cy="160" r="5" fill="#ffa04a" stroke="#555" stroke-width="1.2"/><circle style="--k:3" cx="370" cy="160" r="5" fill="#7dd87a" stroke="#555" stroke-width="1.2"/><circle style="--k:4" cx="406" cy="160" r="5" fill="#ffd166" stroke="#555" stroke-width="1.2"/></g>
-  <g class="tube-anim" style="offset-path: path('M40 60 H128 C150 40 200 40 214 70 C222 90 216 104 228 106 C246 108 246 150 262 150 C280 150 280 106 298 106 C316 106 316 150 334 150 C352 150 352 106 370 106 C388 106 388 150 406 150 C420 150 426 128 446 128 C470 128 500 128 512 140 C526 154 526 176 526 214')">
-    <circle class="bolus2" r="11"/>
-  </g>
-  <g fill="none" stroke="#b8444f" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path transform="translate(66 34) rotate(0)" d="M-5 -8 L5 0 L-5 8"/><path transform="translate(92 34) rotate(0)" d="M-5 -8 L5 0 L-5 8"/><path transform="translate(560 168) rotate(90)" d="M-5 -8 L5 0 L-5 8"/><path transform="translate(560 192) rotate(90)" d="M-5 -8 L5 0 L-5 8"/></g>
+      <svg class="il il-tube" viewBox="0 0 580 240" aria-hidden="true" style="--sto:11.09%;--si:30.59%;--li:70.77%">
+  <path d="M222 214 H396" fill="none" stroke="#d63f4d" stroke-width="10" stroke-linecap="round"/>
+  <path d="M222 214 H396" fill="none" stroke="#ff8a8a" stroke-width="4" stroke-linecap="round" stroke-dasharray="10 14" class="blood"/>
+  <g class="nutri-drop"><circle style="--k:0" cx="254" cy="194" r="5" fill="#7dd87a" stroke="#555" stroke-width="1.2"/><circle style="--k:1" cx="340" cy="194" r="5" fill="#ffd166" stroke="#555" stroke-width="1.2"/><circle style="--k:2" cx="232" cy="194" r="5" fill="#ffa04a" stroke="#555" stroke-width="1.2"/><circle style="--k:3" cx="318" cy="194" r="5" fill="#7dd87a" stroke="#555" stroke-width="1.2"/><circle style="--k:4" cx="362" cy="194" r="5" fill="#ffd166" stroke="#555" stroke-width="1.2"/></g>
+  <path d="M414 150 C440 146 452 126 456 104 C462 78 480 64 506 64 C532 64 548 80 548 108 V200" fill="none" stroke="#8a4a26" stroke-width="38" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M414 150 C440 146 452 126 456 104 C462 78 480 64 506 64 C532 64 548 80 548 108 V200" fill="none" stroke="#e7a477" stroke-width="30" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M414 150 C440 146 452 126 456 104 C462 78 480 64 506 64 C532 64 548 80 548 108 V200" fill="none" stroke="#c4733f" stroke-width="30" stroke-dasharray="3 13"/>
+  <path d="M100 118 C86 126 90 150 118 150 C150 150 186 142 210 150 C232 162 234 184 254 184 C274 184 274 148 296 148 C318 148 318 184 340 184 C362 184 362 148 384 148 C398 148 404 152 414 150" fill="none" stroke="#b8545a" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M100 118 C86 126 90 150 118 150 C150 150 186 142 210 150 C232 162 234 184 254 184 C274 184 274 148 296 148 C318 148 318 184 340 184 C362 184 362 148 384 148 C398 148 404 152 414 150" fill="none" stroke="#f6b0a6" stroke-width="14" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M36 56 H149" fill="none" stroke="#b8444f" stroke-width="22" stroke-linecap="round"/>
+  <path d="M36 56 H149" fill="none" stroke="#f19a9a" stroke-width="14" stroke-linecap="round"/>
+  <path d="M 149.4 55.8 C 157.0 44.3 189.3 40.0 206.4 53.0 C 225.4 67.4 227.3 97.6 212.1 116.3 C 196.9 135.0 158.9 140.8 132.3 132.2 C 117.1 127.1 107.6 122.1 101.9 123.5 L 100.0 112.0 C 109.5 109.1 119.0 114.9 130.4 114.9 C 149.4 114.9 160.8 106.2 158.9 94.7 C 157.0 83.2 139.9 76.0 149.4 55.8 Z" fill="#f19a9a" stroke="#b8444f" stroke-width="4" stroke-linejoin="round"/>
+  <path d="M 170.3 60.2 C 185.5 63.0 202.6 74.6 206.4 90.4 M 164.6 74.6 C 179.8 78.9 191.2 91.8 189.3 106.2 M 176.0 117.8 C 187.4 114.9 196.9 107.7 200.7 100.5" fill="none" stroke="#d96b72" stroke-width="3" stroke-linecap="round"/>
+  <ellipse cx="34" cy="56" rx="8" ry="15" fill="#7a2a35" stroke="#b8444f" stroke-width="4"/>
+  <ellipse cx="548" cy="212" rx="12" ry="6" fill="#5a2a12" stroke="#8a4a26" stroke-width="3"/>
+  <g class="tube-anim" style="offset-path: path('M36 56 H149 C160 58 176 58 190 66 C204 76 208 92 204 104 C198 118 180 126 160 127 C140 128 120 122 100 118 C86 126 90 150 118 150 C150 150 186 142 210 150 C232 162 234 184 254 184 C274 184 274 148 296 148 C318 148 318 184 340 184 C362 184 362 148 384 148 C398 148 404 152 414 150 C440 146 452 126 456 104 C462 78 480 64 506 64 C532 64 548 80 548 108 V200')"><circle class="bolus2" r="9"/></g>
+  <g fill="none" stroke="#fff" stroke-width="3" stroke-linecap="round" stroke-linejoin="round" opacity=".9"><path transform="translate(62 56) rotate(0)" d="M-4 -6 L3 0 L-4 6"/><path transform="translate(92 56) rotate(0)" d="M-4 -6 L3 0 L-4 6"/><path transform="translate(548 140) rotate(90)" d="M-4 -6 L3 0 L-4 6"/><path transform="translate(548 172) rotate(90)" d="M-4 -6 L3 0 L-4 6"/></g>
   <g font-family="Lexend, sans-serif" font-size="20" font-weight="600" fill="#5a3a1a" text-anchor="middle">
-    <text x="30" y="106">Miệng</text><text x="172" y="146">Dạ dày</text><text x="334" y="228">Ruột non</text>
-    <text x="468" y="102">Ruột già</text><text x="496" y="236" text-anchor="end">Hậu môn</text>
+    <text x="34" y="98">Miệng</text><text x="78" y="30">Thực quản</text><text x="252" y="64" text-anchor="start">Dạ dày</text>
+    <path d="M248 58 L216 66" stroke="#5a3a1a" stroke-width="2"/>
+    <text x="308" y="236">Ruột non</text><text x="506" y="38">Ruột già</text><text x="530" y="236" text-anchor="end">Hậu môn</text>
   </g>
 </svg>
       <h3>Tiêu hoá trong ống tiêu hoá:</h3>
@@ -1765,7 +1780,7 @@ tr.rv > td {
   <g class="enzyme-big" transform="translate(-520 -58)"><path d="M816 150 L856 128 A34 34 0 1 0 856 172 Z" fill="#9b7fd0" stroke="#4d3478" stroke-width="4" stroke-linejoin="round"/>
     <circle cx="840" cy="130" r="4.5" fill="#2b2320"/><circle cx="842" cy="128" r="1.5" fill="#fff"/></g>
   <g font-family="Lexend, sans-serif" font-size="22" font-weight="600" fill="#c0521a" text-anchor="middle">
-    <text x="140" y="168">tinh bột</text><text x="300" y="196" font-size="18" fill="#5f4590">amylase</text><text x="460" y="168">maltose</text>
+    <text x="140" y="168">tinh bột</text><text x="300" y="196" font-size="18" fill="#5f4590">Enzyme amylase</text><text x="460" y="168">maltose</text>
   </g>
 </svg></article>
   </div>
@@ -1992,6 +2007,7 @@ tr.rv > td {
    DECK CONTROLLER
    Arrows / Space / PageUp-Down / Home / End / wheel / swipe,
    F = fullscreen, E = edit text, Ctrl+S = save edited copy,
+   click a picture = zoom it (click / Esc to close),
    T = cycle through every transition effect.
    Each slide declares data-sec (chapter), data-mode
    (cover | home | flood | rail) and data-blob (background layout);
@@ -2106,6 +2122,7 @@ class Deck {
         this.setupTabs();
         this.setupParallax();
         this.setupVideo();
+        this.setupZoom();
         this.setupEditing();
         // Two frames so the first slide's entry animation actually plays
         requestAnimationFrame(() => requestAnimationFrame(() => this.show(0)));
@@ -2122,6 +2139,10 @@ class Deck {
 
     setupKeys() {
         document.addEventListener('keydown', (e) => {
+            if (this.zoomed) {
+                if (!['Shift', 'Control', 'Alt', 'Meta'].includes(e.key)) { e.preventDefault(); this.closeZoom(); }
+                return;
+            }
             if (document.body.classList.contains('editing')) {
                 if ((e.ctrlKey || e.metaKey) && e.key === 's') { e.preventDefault(); this.saveCopy(); }
                 if (e.key === 'Escape') this.toggleEditing();
@@ -2192,7 +2213,57 @@ class Deck {
         return video.play().catch(() => { video.muted = true; return video.play().catch(() => {}); });
     }
 
+    /* --- Click any figure or drawing to see it large --- */
+    setupZoom() {
+        const layer = document.createElement('div');
+        layer.className = 'zoom-layer';
+        layer.innerHTML = '<div class="zoom-box"></div><p class="zoom-cap"></p><span class="zoom-hint">Bấm hoặc nhấn Esc để thu nhỏ</span>';
+        this.stage.appendChild(layer);
+        this.zoomLayer = layer;
+        this.zoomed = null;
+        this.stage.addEventListener('click', (e) => {
+            if (this.zoomed) { this.closeZoom(); return; }
+            if (document.body.classList.contains('editing')) return;
+            const el = e.target.closest('.slide.active .fig img, .slide.active svg.il');
+            if (el) this.openZoom(el);
+        });
+    }
+
+    openZoom(el) {
+        const box = this.zoomLayer.querySelector('.zoom-box');
+        const isImg = el.tagName === 'IMG';
+        const ratio = isImg ? el.naturalWidth / el.naturalHeight : el.viewBox.baseVal.width / el.viewBox.baseVal.height;
+        const w = Math.min(1640, 820 * ratio);
+        const h = w / ratio;
+        box.style.width = `${w}px`;
+        box.style.height = `${h}px`;
+        box.replaceChildren(isImg ? Object.assign(new Image(), { src: el.src, alt: el.alt }) : el.cloneNode(true));
+        this.zoomLayer.querySelector('.zoom-cap').textContent = isImg ? el.alt : '';
+        // grow out of the clicked picture (stage coordinates)
+        const s = this.stage.getBoundingClientRect();
+        const f = s.width / 1920;
+        const r = el.getBoundingClientRect();
+        const dx = (r.left + r.width / 2 - s.left) / f - 960;
+        const dy = (r.top + r.height / 2 - s.top) / f - 540;
+        const k = Math.max(0.05, (r.width / f) / w);
+        this.zoomLayer.classList.add('open');
+        this.zoomed = { box, from: `translate(${dx}px, ${dy}px) scale(${k})` };
+        box.animate([{ transform: this.zoomed.from }, { transform: 'none' }], { duration: 520, easing: 'cubic-bezier(0.16, 1, 0.3, 1)' });
+        this.zoomLayer.animate([{ opacity: 0 }, { opacity: 1 }], { duration: 300 });
+    }
+
+    closeZoom() {
+        if (!this.zoomed) return;
+        const { box, from } = this.zoomed;
+        this.zoomed = null;
+        box.animate([{ transform: 'none' }, { transform: from }], { duration: 380, easing: 'cubic-bezier(0.7, 0, 0.84, 0)' });
+        this.zoomLayer.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 380 }).finished.then(() => {
+            if (!this.zoomed) { this.zoomLayer.classList.remove('open'); box.replaceChildren(); }
+        });
+    }
+
     show(index) {
+        this.closeZoom();
         index = Math.max(0, Math.min(index, this.slides.length - 1));
         if (this.started && index === this.current) return;
         this.settle();
