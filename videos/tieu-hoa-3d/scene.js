@@ -1,4 +1,5 @@
-// scene.js — procedural 3D digestive system for the HyperFrames "three" adapter.
+// scene.js — 3D digestive system for the HyperFrames "three" adapter.
+// Anatomy: "Digestive-system" by Genesis1 (Sketchfab), CC BY 4.0 — assets/models/digestive-system.glb.
 // Everything is a pure function of time t (seconds): renderAt(t) is called on every
 // hf-seek, so any frame can be rendered in any order.
 import * as THREE from 'three';
@@ -7,6 +8,7 @@ import { EffectComposer } from 'three/addons/postprocessing/EffectComposer.js';
 import { RenderPass } from 'three/addons/postprocessing/RenderPass.js';
 import { UnrealBloomPass } from 'three/addons/postprocessing/UnrealBloomPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 
 const W = 1920;
 const H = 1080;
@@ -151,11 +153,17 @@ function blob(radius, scale, noise, seed, detail = 5) {
     return g;
 }
 
-// ---------------------------------------------------------------- anatomy
+// ---------------------------------------------------------------- anatomy (GLB model)
 const body = new THREE.Group();
 scene.add(body);
 
-// Hologram silhouette (fresnel rim, additive)
+// Model units → scene units (the camera shots, labels and particles below were authored
+// for a body ~6 units tall with the mouth at y≈2.6 and the anus at y≈-2.3)
+const K = 0.0701;
+const M = (x, y, z) => v3(x * K, y * K - 2.6, z * K + 0.55);
+const toScene = new THREE.Matrix4().makeTranslation(0, -2.6, 0.55).multiply(new THREE.Matrix4().makeScale(K, K, K));
+
+// Hologram silhouette (fresnel rim, additive) replaces the model's grey skin
 const holoMat = new THREE.ShaderMaterial({
     transparent: true,
     depthWrite: false,
@@ -165,100 +173,77 @@ const holoMat = new THREE.ShaderMaterial({
     vertexShader: 'varying vec3 vN; varying vec3 vV; void main(){ vec4 mv = modelViewMatrix*vec4(position,1.0); vN = normalize(normalMatrix*normal); vV = normalize(-mv.xyz); gl_Position = projectionMatrix*mv; }',
     fragmentShader: 'uniform vec3 uColor; uniform float uAlpha; varying vec3 vN; varying vec3 vV; void main(){ float f = pow(1.0 - clamp(abs(dot(normalize(vN), normalize(vV))), 0.0, 1.0), 2.2); gl_FragColor = vec4(uColor * f * 1.4, f * uAlpha); }',
 });
-const torsoProfile = [[0.0, -2.45], [0.8, -2.4], [1.02, -1.7], [0.92, -0.7], [0.86, 0.2], [1.0, 1.2], [1.22, 1.85], [1.08, 2.22], [0.36, 2.36], [0.27, 2.5], [0.25, 2.62]].map(([x, y]) => new THREE.Vector2(x, y));
-const torso = new THREE.Mesh(new THREE.LatheGeometry(torsoProfile, 64), holoMat);
-torso.scale.set(1, 1, 0.55);
-body.add(torso);
-const head = new THREE.Mesh(new THREE.SphereGeometry(0.5, 48, 32), holoMat);
-head.scale.set(0.85, 1.05, 0.95);
-head.position.set(0, 3.05, 0.05);
-body.add(head);
 
-// Esophagus
-const esoCurve = new THREE.CatmullRomCurve3([v3(0, 2.58, 0.26), v3(0, 2.25, 0.13), v3(0, 1.65, 0.06), v3(0.02, 1.05, 0.06), v3(0.12, 0.64, 0.12)]);
-const esoGeo = makeSweep(esoCurve, 160, 18);
-body.add(new THREE.Mesh(esoGeo, organ(0xe0786d)));
-
-// Stomach (J shape, radius bulges in the middle)
-const stoCurve = new THREE.CatmullRomCurve3([v3(0.12, 0.64, 0.12), v3(0.32, 0.66, 0.2), v3(0.53, 0.45, 0.22), v3(0.6, 0.1, 0.25), v3(0.5, -0.2, 0.25), v3(0.26, -0.34, 0.25), v3(0.02, -0.28, 0.22), v3(-0.12, -0.2, 0.2)]);
-const stoGeo = makeSweep(stoCurve, 160, 28);
-body.add(new THREE.Mesh(stoGeo, organ(0xe36f69)));
-
-// Duodenum + small intestine (meandering coil) ending at the caecum
-const siPts = [v3(-0.12, -0.2, 0.2), v3(-0.3, -0.3, 0.18), v3(-0.33, -0.55, 0.18), v3(-0.16, -0.7, 0.2), v3(0.08, -0.7, 0.28)];
-for (let i = 1; i <= 120; i++) {
-    const s = i / 120;
-    siPts.push(v3(0.5 * Math.sin(s * Math.PI * 7), -0.78 - s * 0.9 + 0.05 * Math.sin(s * Math.PI * 28), 0.36 + 0.1 * Math.cos(s * Math.PI * 7) + 0.04 * Math.sin(s * Math.PI * 17)));
-}
-siPts.push(v3(-0.22, -1.72, 0.32), v3(-0.45, -1.74, 0.3));
-const siCurve = new THREE.CatmullRomCurve3(siPts);
-const siGeo = makeSweep(siCurve, 1100, 14);
-body.add(new THREE.Mesh(siGeo, organ(0xec8a78)));
-
-// Large intestine: caecum → ascending → transverse → descending → sigmoid → rectum → anus
-const colonCurve = new THREE.CatmullRomCurve3([
-    v3(-0.5, -1.82, 0.28), v3(-0.74, -1.62, 0.25), v3(-0.8, -1.1, 0.25), v3(-0.76, -0.62, 0.3), v3(-0.5, -0.47, 0.42),
-    v3(0, -0.44, 0.5), v3(0.5, -0.47, 0.42), v3(0.78, -0.62, 0.3), v3(0.82, -1.1, 0.25), v3(0.76, -1.6, 0.25),
-    v3(0.5, -1.86, 0.25), v3(0.2, -1.92, 0.2), v3(0.04, -2.06, 0.15), v3(0, -2.32, 0.1),
-]);
-const colonGeo = makeSweep(colonCurve, 520, 22);
-body.add(new THREE.Mesh(colonGeo, organ(0xc4744a)));
-
-// Liver, gallbladder, pancreas, salivary glands, tongue, teeth
-const liver = new THREE.Mesh(blob(1, [0.78, 0.4, 0.42], 0.06, 3), organ(0x8e2f2a, { roughness: 0.3 }));
-liver.position.set(-0.42, 0.52, 0.12);
-liver.rotation.z = -0.28;
-body.add(liver);
-const gall = new THREE.Mesh(blob(1, [0.07, 0.14, 0.07], 0.05, 4, 3), organ(0x4fa043));
-gall.position.set(-0.3, 0.14, 0.44);
-gall.rotation.z = 0.5;
-body.add(gall);
-const pancCurve = new THREE.CatmullRomCurve3([v3(-0.12, -0.36, 0.02), v3(0.18, -0.25, -0.02), v3(0.48, -0.14, 0), v3(0.7, -0.05, 0.02)]);
-const pancGeo = makeSweep(pancCurve, 80, 14);
-updateSweep(pancGeo, (s) => lerp(0.085, 0.04, s) * (1 + 0.08 * Math.sin(s * 40)));
-body.add(new THREE.Mesh(pancGeo, organ(0xe2ad45)));
-const salivary = [];
-for (const sx of [-1, 1]) {
-    for (const [x, y, z, r] of [[0.36, 2.86, 0.06, 0.08], [0.24, 2.55, 0.16, 0.06]]) {
-        const g = new THREE.Mesh(blob(r, [1, 1.3, 1], 0.12, 9 + salivary.length, 3), organ(0xbf8f3a, { emissiveIntensity: 0, envMapIntensity: 0.3 }));
-        g.position.set(x * sx, y, z);
-        body.add(g);
-        salivary.push(g);
+// The organs bulge where the food is (peristalsis) and glow softly around it
+const organUniforms = {
+    uBolus: { value: v3(0, -99, 0) },
+    uBulge: { value: 0 },
+    uBulgeR: { value: 0.08 },
+    uGlow: { value: 0 },
+};
+let organMat = null;
+const gltf = await new GLTFLoader().loadAsync('assets/models/digestive-system.glb');
+gltf.scene.updateMatrixWorld(true);
+const meshes = [];
+gltf.scene.traverse((o) => { if (o.isMesh) meshes.push(o); });
+for (const o of meshes) {
+    const geo = o.geometry.clone();
+    geo.applyMatrix4(new THREE.Matrix4().multiplyMatrices(toScene, o.matrixWorld));
+    const isSkin = o.material.name === 'Material_1';
+    let mat = holoMat;
+    if (!isSkin) {
+        mat = o.material;
+        mat.roughness = 0.5;
+        mat.envMapIntensity = 0.45;
+        mat.onBeforeCompile = (shader) => {
+            Object.assign(shader.uniforms, organUniforms);
+            shader.vertexShader = shader.vertexShader
+                .replace('#include <common>', '#include <common>\nuniform vec3 uBolus; uniform float uBulge; uniform float uBulgeR; varying vec3 vWorld;')
+                .replace('#include <begin_vertex>', '#include <begin_vertex>\nfloat bd = distance(transformed, uBolus);\ntransformed += objectNormal * uBulge * exp(-bd * bd / (uBulgeR * uBulgeR));\nvWorld = transformed;');
+            shader.fragmentShader = shader.fragmentShader
+                .replace('#include <common>', '#include <common>\nuniform vec3 uBolus; uniform float uGlow; uniform float uBulgeR; varying vec3 vWorld;')
+                .replace('#include <emissivemap_fragment>', '#include <emissivemap_fragment>\nfloat gd = distance(vWorld, uBolus);\ntotalEmissiveRadiance += vec3(1.0, 0.62, 0.25) * uGlow * exp(-gd * gd / (uBulgeR * uBulgeR * 6.0));');
+        };
+        organMat = mat;
     }
+    const mesh = new THREE.Mesh(geo, mat);
+    if (isSkin) mesh.renderOrder = 2;
+    body.add(mesh);
 }
-const tongue = new THREE.Mesh(blob(1, [0.17, 0.05, 0.2], 0.04, 7, 3), organ(0xe2707a));
-tongue.position.set(0, 2.6, 0.32);
-body.add(tongue);
-const teethUpper = new THREE.Group();
-const teethLower = new THREE.Group();
-const toothGeo = new THREE.BoxGeometry(0.045, 0.06, 0.04);
-const toothMat = organ(0xd9cfbd, { emissiveIntensity: 0, roughness: 0.35, envMapIntensity: 0.3 });
-for (let i = 0; i < 10; i++) {
-    const a = (i / 9 - 0.5) * 2.2;
-    for (const [grp, y] of [[teethUpper, 0.03], [teethLower, -0.03]]) {
-        const tooth = new THREE.Mesh(toothGeo, toothMat);
-        tooth.position.set(Math.sin(a) * 0.2, y, Math.cos(a) * 0.2);
-        tooth.rotation.y = a;
-        grp.add(tooth);
-    }
-}
-teethUpper.position.set(0, 2.69, 0.24);
-teethLower.position.set(0, 2.66, 0.24);
-body.add(teethUpper, teethLower);
+
+// Centre-lines through the model's organs (model units, measured on the mesh)
+const path = (pts) => new THREE.CatmullRomCurve3(pts.map(([x, y, z]) => M(x, y, z)));
+const esoCurve = path([[0, 74.5, -0.4], [0, 73, -1.8], [0, 71, -2.9], [0, 68, -6.3], [0, 64, -8.7], [0, 58, -10.9], [0.2, 52, -12.7],
+    [0.3, 46, -10.8], [1.2, 42.5, -8.3], [2.0, 40.5, -6.8], [2.5, 39.5, -5.6]]);
+const stoCurve = path([[2.5, 39.5, -5.6], [4.5, 37.5, -5.8], [5.5, 35, -5.65], [5, 32.5, -5.6], [3, 31, -5.5], [0.5, 31.2, -5.7],
+    [-1.5, 32.5, -6.5], [-2.8, 33.5, -7.0]]);
+const siCurve = path([[-2.8, 33.5, -7.0], [-4.2, 33, -5.6], [-5.3, 31.5, -5.1], [-5.5, 30, -5.0], [-5, 26, -4.5], [-2, 25.5, -6.0],
+    [2, 25, -5.6], [6, 24.5, -5.2], [7, 22, -6.0], [3, 21.5, -4.6], [-2, 22, -3.8], [-7, 21, -5.6], [-6, 18.5, -5.1], [-1, 18.5, -4.6],
+    [4, 18, -5.5], [8, 17, -6.7], [6, 14.5, -8.0], [1, 15.5, -5.1], [-4, 14.5, -6.1], [-7, 13.5, -7.5]]);
+const colonCurve = path([[-7, 13.5, -7.5], [-9.6, 17, -7.3], [-9.8, 20, -7.4], [-9.6, 25, -7.1], [-9.5, 28, -6.7], [-5, 28.5, -4.8],
+    [0, 28.5, -3.2], [5, 28.5, -4.6], [9.5, 28, -7.4], [9.6, 25, -9.3], [9.8, 20, -9.6], [9.6, 16, -8.7], [9, 13.5, -8.2], [5, 12.5, -8.0],
+    [2, 12, -8.9], [0.5, 10.5, -12.2], [0.2, 8, -13.7], [0.2, 5.5, -14.3], [0.1, 4.2, -14.4]]);
 
 // ---------------------------------------------------------------- food: bolus, trail, chyme, secretions
-const bolus = new THREE.Mesh(blob(0.11, [1, 0.9, 1], 0.12, 21, 4), new THREE.MeshStandardMaterial({ color: 0xffd27a, emissive: 0xff9a3c, emissiveIntensity: 0.22, roughness: 0.45 }));
+// The food is inside the organs, so it is drawn through them (x-ray style) with a halo
+const bolus = new THREE.Mesh(blob(0.055, [1, 0.9, 1], 0.12, 21, 4), new THREE.MeshStandardMaterial({ color: 0xffd27a, emissive: 0xff9a3c, emissiveIntensity: 0.5, roughness: 0.45, depthTest: false, transparent: true }));
+bolus.renderOrder = 5;
 scene.add(bolus);
+const halo = new THREE.Mesh(new THREE.SphereGeometry(0.1, 24, 16), new THREE.MeshBasicMaterial({ color: 0xffb04a, transparent: true, opacity: 0.22, depthTest: false, depthWrite: false, blending: THREE.AdditiveBlending }));
+halo.renderOrder = 4;
+scene.add(halo);
 
 const TRAIL = 40;
 const trailGeo = new THREE.BufferGeometry();
 trailGeo.setAttribute('position', new THREE.BufferAttribute(new Float32Array(TRAIL * 3), 3));
-const trail = new THREE.Points(trailGeo, new THREE.PointsMaterial({ color: 0xffc45a, size: 0.035, transparent: true, opacity: 0.55, depthWrite: false, blending: THREE.AdditiveBlending }));
+const trail = new THREE.Points(trailGeo, new THREE.PointsMaterial({ color: 0xffc45a, size: 0.03, transparent: true, opacity: 0.55, depthWrite: false, depthTest: false, blending: THREE.AdditiveBlending }));
+trail.renderOrder = 4;
 scene.add(trail);
 
 // Chyme / enzyme particles that swirl in the stomach
 const CHYME = 90;
-const chyme = new THREE.InstancedMesh(new THREE.SphereGeometry(0.022, 10, 8), new THREE.MeshStandardMaterial({ color: 0xffd38a, emissive: 0xffa53c, emissiveIntensity: 1.2 }), CHYME);
+const chyme = new THREE.InstancedMesh(new THREE.SphereGeometry(0.016, 10, 8), new THREE.MeshStandardMaterial({ color: 0xffd38a, emissive: 0xffa53c, emissiveIntensity: 1.2, depthTest: false, transparent: true }), CHYME);
+chyme.renderOrder = 5;
 const chymeSeed = Array.from({ length: CHYME }, () => [rand() * 6.28, rand() * 6.28, 0.6 + rand() * 0.8, rand()]);
 const enzymeColors = [new THREE.Color(0xb48cff), new THREE.Color(0x7dffb0), new THREE.Color(0xffd38a)];
 for (let i = 0; i < CHYME; i++) chyme.setColorAt(i, enzymeColors[i % 3]);
@@ -266,15 +251,17 @@ scene.add(chyme);
 
 // Bile (green) and pancreatic juice (yellow) droplets flowing into the duodenum
 const DROPS = 40;
-const drops = new THREE.InstancedMesh(new THREE.SphereGeometry(0.02, 8, 6), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.1 }), DROPS);
-const bilePath = new THREE.CatmullRomCurve3([v3(-0.3, 0.1, 0.46), v3(-0.25, -0.12, 0.36), v3(-0.3, -0.32, 0.22)]);
-const pancPath = new THREE.CatmullRomCurve3([v3(0.4, -0.15, 0.04), v3(0.05, -0.3, 0.1), v3(-0.28, -0.42, 0.2)]);
+const drops = new THREE.InstancedMesh(new THREE.SphereGeometry(0.016, 8, 6), new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xffffff, emissiveIntensity: 1.1, depthTest: false, transparent: true }), DROPS);
+drops.renderOrder = 5;
+const bilePath = path([[-6, 34, -4], [-6.5, 31.5, -5.2], [-5.3, 31, -5.1]]);
+const pancPath = path([[6, 31.5, -7.4], [1, 31, -7.4], [-4.5, 31.5, -6]]);
 for (let i = 0; i < DROPS; i++) drops.setColorAt(i, new THREE.Color(i % 2 ? 0x8cff6a : 0xffd84d));
 scene.add(drops);
 
 // Recap sparks that race along the whole tract
 const SPARKS = 6;
-const sparks = new THREE.InstancedMesh(new THREE.SphereGeometry(0.045, 12, 10), new THREE.MeshStandardMaterial({ color: 0xfff1c0, emissive: 0xffc04a, emissiveIntensity: 2 }), SPARKS);
+const sparks = new THREE.InstancedMesh(new THREE.SphereGeometry(0.035, 12, 10), new THREE.MeshStandardMaterial({ color: 0xfff1c0, emissive: 0xffc04a, emissiveIntensity: 2, depthTest: false, transparent: true }), SPARKS);
+sparks.renderOrder = 5;
 scene.add(sparks);
 
 // ---------------------------------------------------------------- villi close-up (separate set far away)
@@ -335,54 +322,50 @@ const UP = v3(0, 1, 0);
 // Where the bolus is (curve + s), per time — the single source for food, waves and camera
 function foodAt(t) {
     if (t < SHOT.mouth + 0.3) return null;
-    if (t < 12.4) return { curve: null, pos: v3(0, 2.62, 0.33), scale: 1 + 0.12 * Math.sin(t * 9) };
-    if (t < SHOT.stomach) return { curve: esoCurve, geo: esoGeo, s: range(t, 12.4, 19.6), scale: 1 };
+    if (t < 12.4) return { curve: null, pos: M(0, 74.5, -0.4), scale: 1 + 0.12 * Math.sin(t * 9) };
+    if (t < SHOT.stomach) return { curve: esoCurve, s: range(t, 12.4, 19.6), scale: 1 };
     if (t < SHOT.small) {
         const s = t < 24 ? range(t, 20, 24) * 0.55 : t < 28 ? 0.55 + 0.05 * Math.sin((t - 24) * 2.4) : lerp(0.55, 1, range(t, 28, 30.8));
-        return { curve: stoCurve, geo: stoGeo, s, scale: lerp(1, 0.55, range(t, 23, 28)) };
+        return { curve: stoCurve, s, scale: lerp(1, 0.55, range(t, 23, 28)) };
     }
-    if (t < SHOT.villi) return { curve: siCurve, geo: siGeo, s: range(t, 31.2, 42.8), scale: 0.55 };
+    if (t < SHOT.villi) return { curve: siCurve, s: range(t, 31.2, 42.8), scale: 0.55 };
     if (t < SHOT.large) return null;
-    if (t < SHOT.recap) return { curve: colonCurve, geo: colonGeo, s: range(t, 54.4, 62.4) * 0.995, scale: lerp(0.95, 0.8, range(t, 54, 62)), exit: range(t, 62.4, 63.6) };
+    if (t < SHOT.recap) return { curve: colonCurve, s: range(t, 54.4, 62.4) * 0.995, scale: lerp(0.95, 0.8, range(t, 54, 62)), exit: range(t, 62.4, 63.6) };
     return null;
 }
 
-// Peristaltic wave: bulge at the bolus, squeeze just behind it
-const wave = (s, sb, active) => (active ? 0.55 * Math.exp(-(((s - sb) / 0.035) ** 2)) - 0.3 * Math.exp(-(((s - sb + 0.06) / 0.03) ** 2)) : 0);
+function updateOrgans(t, food, p) {
+    // The wall swells around the food as it moves (peristalsis); in the mouth it pulses with chewing
+    organUniforms.uBolus.value.copy(p || v3(0, -99, 0));
+    const inTube = food && food.curve;
+    organUniforms.uBulge.value = food ? (inTube ? 0.022 : 0.012 * (1 + Math.sin(t * 9))) * (1 - (food.exit || 0)) : 0;
+    organUniforms.uBulgeR.value = food && food.curve === stoCurve ? 0.12 : 0.075;
+    organUniforms.uGlow.value = food ? (food.curve === stoCurve ? 0.3 : 0.55) : 0;
+}
 
-function updateOrgans(t, food) {
-    const on = (geo) => food && food.geo === geo;
-    updateSweep(esoGeo, (s) => 0.07 * (1 + wave(s, food?.s ?? -1, on(esoGeo)) * 1.4));
-    const churn = window01(t, SHOT.stomach, SHOT.small, 1);
-    updateSweep(stoGeo, (s, th) => {
-        const base = 0.085 + 0.27 * Math.pow(Math.sin(Math.PI * clamp(s * 1.05)), 0.7);
-        return base * (1 + churn * 0.09 * Math.sin(t * 3.2 - s * 14 + th * 2));
-    });
-    updateSweep(siGeo, (s) => (s < 0.04 ? 0.08 : 0.068) * (1 + wave(s, food?.s ?? -1, on(siGeo)) * 0.9));
-    updateSweep(colonGeo, (s) => {
-        const taper = s > 0.9 ? lerp(1, 0.6, (s - 0.9) / 0.1) : 1;
-        return 0.135 * taper * (1 + 0.1 * Math.sin(s * 120)) * (1 + wave(s, food?.s ?? -1, on(colonGeo)) * 0.6);
-    });
-    // chewing
-    const chew = window01(t, SHOT.mouth, 12.6, 0.4);
-    teethLower.position.y = 2.66 - chew * (0.025 + 0.025 * Math.sin(t * 9));
-    tongue.position.y = 2.6 - chew * 0.012 * Math.sin(t * 9 + 1);
-    salivary.forEach((g, i) => g.scale.setScalar(1 + chew * 0.08 * Math.sin(t * 6 + i)));
+function foodPos(t, food) {
+    if (!food) return null;
+    const p = food.curve ? food.curve.getPointAt(clamp(food.s)) : food.pos.clone();
+    if (food.exit) p.y -= food.exit * 0.15;
+    return p;
 }
 
 function updateFood(t, food) {
-    if (!food) { bolus.visible = false; trail.visible = false; return; }
+    if (!food) { bolus.visible = false; halo.visible = false; trail.visible = false; return; }
     bolus.visible = true;
+    halo.visible = true;
     trail.visible = true;
     const posAt = (tt) => {
         const f = foodAt(tt);
         if (!f) return null;
         return f.curve ? f.curve.getPointAt(clamp(f.s)) : f.pos.clone();
     };
-    const p = posAt(t);
-    if (food.exit) p.y -= food.exit * 0.4;
+    const p = foodPos(t, food);
     bolus.position.copy(p);
     bolus.scale.setScalar(food.scale * (1 - (food.exit || 0)));
+    halo.position.copy(p);
+    halo.scale.setScalar(food.scale * (1 - (food.exit || 0)) * (1 + 0.12 * Math.sin(t * 5)));
+    halo.material.color.setHex(t > SHOT.large ? 0xb07040 : t > SHOT.small ? 0xb8ff6a : 0xffb04a);
     bolus.rotation.set(t * 1.3, t * 0.9, 0);
     const color = t > SHOT.large ? 0xa0673a : t > SHOT.small ? 0xd8ff7a : 0xffd27a;
     bolus.material.color.setHex(color);
@@ -398,11 +381,11 @@ function updateFood(t, food) {
 function updateChyme(t) {
     const k = window01(t, 22.5, 31, 1.2);
     chyme.visible = k > 0;
-    const c = stoCurve.getPointAt(0.55);
+    const c = stoCurve.getPointAt(0.4);
     for (let i = 0; i < CHYME; i++) {
         const [a, b, sp, r0] = chymeSeed[i];
         const ang = a + t * sp;
-        const rr = 0.08 + r0 * 0.16;
+        const rr = 0.04 + r0 * 0.08;
         tmpP.set(c.x + Math.cos(ang) * rr, c.y + Math.sin(ang * 0.7 + b) * rr * 0.9, c.z + Math.sin(ang) * rr * 0.6);
         tmpS.setScalar(k * (0.6 + r0 * 0.8));
         chyme.setMatrixAt(i, tmpM.compose(tmpP, tmpQ, tmpS));
@@ -484,8 +467,8 @@ const CAM = [
     [12.4, [0.7, 2.82, 1.35], [0, 2.62, 0.3]],
     [14.2, [1.0, 2.3, 1.7], [0, 2.05, 0.12]],
     [19.6, [0.95, 0.95, 1.8], [0.05, 0.78, 0.12]],
-    [21.4, [1.7, 0.62, 2.1], [0.3, 0.15, 0.2]],
-    [30.4, [0.9, 0.3, 2.2], [0.25, 0.05, 0.2]],
+    [21.4, [2.0, -0.32, 1.25], [0.24, -0.2, 0.12]],
+    [30.4, [1.3, -0.55, 1.7], [0.12, -0.26, 0.14]],
     [32.2, [-1.25, -0.15, 2.05], [-0.18, -0.38, 0.2]],
     [36.2, [-0.4, -0.8, 2.5], [0, -1.0, 0.3]],
     [42.8, [0.55, -1.55, 2.3], [0, -1.4, 0.3]],
@@ -512,17 +495,17 @@ function cameraAt(t) {
 
 // ---------------------------------------------------------------- labels (3D anchors → screen)
 const LABELS = [
-    ['mieng', v3(0, 2.66, 0.45), [[SHOT.mouth, 12.8], [SHOT.recap + 1, SHOT.end]]],
-    ['nuocbot', v3(0.38, 2.88, 0.1), [[7.2, 12.6], [SHOT.recap + 1.2, SHOT.end]]],
-    ['thucquan', v3(0.02, 1.7, 0.1), [[13.6, 19.6], [SHOT.recap + 1.4, SHOT.end]]],
-    ['daday', v3(0.64, 0.2, 0.32), [[20.6, 30.6], [SHOT.recap + 1.6, SHOT.end]]],
-    ['gan', v3(-0.75, 0.62, 0.3), [[31.4, 36], [SHOT.recap + 1.8, SHOT.end]]],
-    ['tuimat', v3(-0.3, 0.12, 0.52), [[31.6, 36]]],
-    ['tuy', v3(0.62, -0.08, 0.08), [[31.8, 36], [SHOT.recap + 2, SHOT.end]]],
-    ['ruotnon', v3(0.42, -1.15, 0.48), [[36.4, 42.8], [SHOT.recap + 2.2, SHOT.end]]],
-    ['ruotgia', v3(-0.82, -1.0, 0.36), [[54.2, 60], [SHOT.recap + 2.4, SHOT.end]]],
-    ['tructrang', v3(0.14, -2.0, 0.22), [[58.4, 63.6]]],
-    ['haumon', v3(0, -2.34, 0.12), [[60.6, 63.8], [SHOT.recap + 2.6, SHOT.end]]],
+    ['mieng', M(0, 74.2, 4.6), [[SHOT.mouth, 12.8], [SHOT.recap + 1, SHOT.end]]],
+    ['nuocbot', M(4.6, 73, 0), [[7.2, 12.6], [SHOT.recap + 1.2, SHOT.end]]],
+    ['thucquan', M(0.1, 60, -10.5), [[13.6, 19.6], [SHOT.recap + 1.4, SHOT.end]]],
+    ['daday', M(7.5, 35, -4), [[20.6, 30.6], [SHOT.recap + 1.6, SHOT.end]]],
+    ['gan', M(-9, 38, -1.5), [[31.4, 34.6], [SHOT.recap + 1.8, SHOT.end]]],
+    ['tuimat', M(-7, 31.2, -4.5), [[31.6, 34.6]]],
+    ['tuy', M(7.5, 31.5, -6.5), [[31.8, 36], [SHOT.recap + 2, SHOT.end]]],
+    ['ruotnon', M(4, 20, -3.5), [[36.4, 42.8], [SHOT.recap + 2.2, SHOT.end]]],
+    ['ruotgia', M(-10.8, 22, -6), [[54.2, 60], [SHOT.recap + 2.4, SHOT.end]]],
+    ['tructrang', M(0.6, 8, -12.6), [[58.4, 63.6]]],
+    ['haumon', M(0.1, 4.2, -14.4), [[60.6, 63.8], [SHOT.recap + 2.6, SHOT.end]]],
 ].map(([id, anchor, windows]) => ({ el: document.getElementById('l-' + id), anchor, windows }));
 
 function updateLabels(t) {
@@ -547,12 +530,12 @@ export function renderAt(t) {
     tmpQ.identity();
     const food = foodAt(t);
     cameraAt(t);
-    updateOrgans(t, food);
+    updateOrgans(t, food, foodPos(t, food));
     updateFood(t, food);
     updateChyme(t);
     updateSparks(t);
     updateVilli(t);
-    holoMat.uniforms.uAlpha.value = lerp(0.55, 0.32, window01(t, SHOT.mouth, SHOT.recap, 1.2));
+    holoMat.uniforms.uAlpha.value = lerp(0.5, 0.28, window01(t, SHOT.mouth, SHOT.recap, 1.2));
     const dp = dust.geometry.attributes.position.array;
     for (let i = 0; i < dustCount; i++) dp[i * 3 + 1] = dustBase[i * 3 + 1] + ((t * 0.05 + i * 0.37) % 1) * 0.4;
     dust.geometry.attributes.position.needsUpdate = true;
