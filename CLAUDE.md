@@ -25,6 +25,19 @@ Chọn skill:
 - Nói “tạp chí”, “magazine”, “Swiss”, “editorial” → `guizang-ppt-skill`.
 - Cần file PowerPoint chỉnh sửa được → `anthropic-skills:pptx`.
 
+## Skill làm video
+
+| Bộ skill | Nguồn | Dùng khi |
+|---|---|---|
+| `hyperframes` (+ `hyperframes-core`, `-animation`, `-keyframes`, `-creative`, `-cli`, `media-use`, `faceless-explainer`, `motion-graphics`, `general-video`) | heygen-com/hyperframes (Apache-2.0) | **Mặc định cho video.** Video dựng bằng HTML + GSAP, render ra MP4 — cùng kiểu với slide HTML của repo nên tái dùng được font, màu, hiệu ứng. Luôn vào qua skill `hyperframes` (nó định tuyến tới workflow con). |
+| `remotion-*` (12 skill, router là `remotion-best-practices`) | remotion-dev/skills | Video dựng bằng React. Dùng khi người dùng muốn Remotion hoặc dự án đã có Remotion. |
+
+Ghi chú:
+- Video giải thích một chủ đề (vd. phần “Ứng dụng” của bài) → `faceless-explainer`; đoạn motion ngắn dưới 10 giây → `motion-graphics`.
+- Lần đầu render HyperFrames cần `npx hyperframes browser ensure` (tải Chrome Headless Shell, đã chạy được ở cloud). `npx hyperframes doctor` để kiểm tra.
+- Lồng tiếng (TTS) và nhạc nền cục bộ chưa cài; hỏi người dùng trước khi cài thêm.
+- Video dự án đặt ở `videos/<tên>/`. Muốn đưa video vào deck thì xuất MP4 rồi nhúng `<video>` vào slide; trong PDF chỉ còn khung hình tĩnh, nên kèm link hoặc mã QR tới video.
+
 ## Quy tắc khi làm slide
 
 - Mỗi deck đặt ở `decks/<tên-deck>/index.html`, ảnh/video kèm theo trong cùng thư mục.
@@ -78,5 +91,5 @@ Video nhúng vào deck chỉ chạy trong HTML; trong PDF nó là ảnh tĩnh c�
 
 ## Môi trường cloud
 
-Mạng ở cloud session bị giới hạn: Google Fonts tải được; `cdn.jsdelivr.net`, `unpkg.com`, `api.fontshare.com`, `youtube.com`, `api.pexels.com` bị chặn trừ khi người dùng thêm vào Allowed domains của environment. Vì vậy trong cloud: nhúng JS trực tiếp vào HTML thay vì tải từ CDN, và MCP `yt-dlp`/`pexels` chỉ chạy được khi đã mở các domain trên.
+Mạng ở cloud session bị giới hạn: Google Fonts, npm và GitHub tải được; `cdn.jsdelivr.net`, `unpkg.com`, `api.fontshare.com`, `youtube.com`, `tiktok.com`, `docs.google.com`, `api.pexels.com` bị chặn trừ khi người dùng thêm vào Allowed domains của environment. Không đọc được link Google Docs thì nhờ người dùng dán nội dung hoặc tải file lên. Vì vậy trong cloud: nhúng JS trực tiếp vào HTML thay vì tải từ CDN, và MCP `yt-dlp`/`pexels` chỉ chạy được khi đã mở các domain trên.
 Chromium có sẵn ở `/opt/pw-browsers` — không chạy `playwright install`.
